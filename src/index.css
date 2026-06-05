@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-brand-orange: #FF5A1F;
+  --color-brand-orange-hover: #E2470E;
+  --color-brand-dark: #0D0D0D;
+  --color-brand-card: #151515;
+  --color-brand-card-hover: #1F1F1F;
+  --color-brand-border: #262626;
+  --color-brand-border-hover: #363636;
+  --color-brand-gray: #8A8A8A;
+  --font-sans: "Outfit", sans-serif;
+  --font-heading: "Space Grotesk", sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-brand-dark);
+    color: #F3F4F6;
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Custom premium scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0D0D0D;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FF5A1F;
+}
+
+/* Custom premium styles */
+.glassmorphic {
+  background: rgba(21, 21, 21, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glow-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glow-hover:hover {
+  box-shadow: 0 0 20px rgba(255, 90, 31, 0.15);
+  border-color: rgba(255, 90, 31, 0.3);
+}
