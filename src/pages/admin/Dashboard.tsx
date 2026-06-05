@@ -1,10 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../lib/api';
 import type { Order } from '../../lib/api';
-import { ShoppingBag, AlertTriangle, ListOrdered, ClipboardList, Loader2, ArrowRight, TrendingUp } from 'lucide-react';
+import { ShoppingBag, AlertTriangle, ListOrdered, ClipboardList, Loader2, ArrowRight, TrendingUp, Volume2, VolumeX } from 'lucide-react';
+
+const playNotificationSound = () => {
+  try {
+    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    
+    // First tone (higher pitch)
+    const osc1 = audioCtx.createOscillator();
+    const gain1 = audioCtx.createGain();
+    osc1.connect(gain1);
+    gain1.connect(audioCtx.destination);
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+    gain1.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+    osc1.start(audioCtx.currentTime);
+    osc1.stop(audioCtx.currentTime + 0.4);
+
+    // Second tone (lower pitch, slightly delayed)
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(440, audioCtx.currentTime + 0.15); // A4
+    gain2.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain2.gain.setValueAtTime(0.1, audioCtx.currentTime + 0.15);
+    gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.65);
+    osc2.start(audioCtx.currentTime + 0.15);
+    osc2.stop(audioCtx.currentTime + 0.65);
+  } catch (err) {
+    console.error('Failed to play audio notification', err);
+  }
+};
 
 export const Dashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -22,6 +55,11 @@ export const Dashboard: React.FC = () => {
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Sound and Autorefresh Polling State/Refs
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const knownOrderIdsRef = useRef<Set<string>>(new Set());
+  const isInitializedRef = useRef(false);
+
   // Authenticate Admin
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -29,48 +67,98 @@ export const Dashboard: React.FC = () => {
     }
   }, [isAuthenticated, authLoading, navigate]);
 
-  // Fetch Stats Data
+  const fetchDashboardData = async (isSilent = false) => {
+    try {
+      if (!isSilent) setIsLoadingData(true);
+      setError(null);
+
+      // Fetch products (under admin auth, this returns all products)
+      const productsList = await api.products.list();
+      const totalProducts = productsList.length;
+      const outOfStockProducts = productsList.filter((p) => !p.in_stock).length;
+
+      // Fetch total orders count
+      const totalOrdersRes = await api.orders.list({ limit: 1 });
+      const totalOrders = totalOrdersRes.count;
+
+      // Fetch new orders count
+      const newOrdersRes = await api.orders.list({ status: 'new', limit: 1 });
+      const newOrders = newOrdersRes.count;
+
+      // Fetch recent 10 orders
+      const recentOrdersRes = await api.orders.list({ limit: 10 });
+      setRecentOrders(recentOrdersRes.orders);
+
+      // Populate knownOrderIdsRef on first load
+      if (knownOrderIdsRef.current.size === 0 && recentOrdersRes.orders) {
+        recentOrdersRes.orders.forEach((o) => knownOrderIdsRef.current.add(o.id));
+      }
+
+      setStats({
+        totalOrders,
+        newOrders,
+        totalProducts,
+        outOfStockProducts,
+      });
+
+    } catch (err: any) {
+      setError(err.message || 'Failed to load dashboard data');
+    } finally {
+      if (!isSilent) setIsLoadingData(false);
+    }
+  };
+
+  // Fetch Stats Data on Mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchDashboardData();
+    }
+  }, [isAuthenticated]);
+
+  // Polling for auto-refresh and sound notifications
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    const fetchDashboardData = async () => {
+    const checkNewOrders = async () => {
       try {
-        setIsLoadingData(true);
-        setError(null);
+        // Fetch the single latest new order to check for notifications
+        const latestNewRes = await api.orders.list({ status: 'new', limit: 1 });
+        if (latestNewRes.orders && latestNewRes.orders.length > 0) {
+          const latestOrder = latestNewRes.orders[0];
+          
+          if (!knownOrderIdsRef.current.has(latestOrder.id)) {
+            knownOrderIdsRef.current.add(latestOrder.id);
+            
+            // Play sound! (Only if this is not the very first load of the page)
+            if (isInitializedRef.current && soundEnabled) {
+              playNotificationSound();
+            }
+          }
+        }
 
-        // Fetch products (under admin auth, this returns all products)
-        const productsList = await api.products.list();
-        const totalProducts = productsList.length;
-        const outOfStockProducts = productsList.filter((p) => !p.in_stock).length;
+        // Mark as initialized
+        isInitializedRef.current = true;
 
-        // Fetch total orders count
-        const totalOrdersRes = await api.orders.list({ limit: 1 });
-        const totalOrders = totalOrdersRes.count;
-
-        // Fetch new orders count
-        const newOrdersRes = await api.orders.list({ status: 'new', limit: 1 });
-        const newOrders = newOrdersRes.count;
-
-        // Fetch recent 10 orders
-        const recentOrdersRes = await api.orders.list({ limit: 10 });
-        setRecentOrders(recentOrdersRes.orders);
-
-        setStats({
-          totalOrders,
-          newOrders,
-          totalProducts,
-          outOfStockProducts,
-        });
-
-      } catch (err: any) {
-        setError(err.message || 'Failed to load dashboard data');
-      } finally {
-        setIsLoadingData(false);
+        // Silently refresh stats
+        await fetchDashboardData(true);
+      } catch (err) {
+        console.error('Error during auto-refresh dashboard polling', err);
       }
     };
 
-    fetchDashboardData();
-  }, [isAuthenticated]);
+    // Set initialized to true after initial fetch
+    const initialTimeout = setTimeout(() => {
+      isInitializedRef.current = true;
+    }, 2000);
+
+    // Check every 15 seconds
+    const interval = setInterval(checkNewOrders, 15000);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+    };
+  }, [isAuthenticated, soundEnabled]);
 
   if (authLoading || !isAuthenticated) {
     return (
@@ -121,8 +209,21 @@ export const Dashboard: React.FC = () => {
           </p>
         </div>
         
-        {/* Navigation Quick Links */}
-        <div className="flex flex-wrap gap-3">
+        {/* Navigation Quick Links and Sound Toggle */}
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+              soundEnabled
+                ? 'bg-green-500/10 border-green-500/20 text-green-400 hover:bg-green-500/20'
+                : 'bg-brand-card border-brand-border text-brand-gray hover:text-white'
+            }`}
+            title={soundEnabled ? "Muter le son" : "Activer le son"}
+          >
+            {soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+            <span>{soundEnabled ? "Son activé" : "Son désactivé"}</span>
+          </button>
+
           <Link
             to="/admin/products"
             className="px-4 py-2 bg-brand-card hover:bg-neutral-800 border border-brand-border text-white text-xs font-semibold rounded-xl transition-all"

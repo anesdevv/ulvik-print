@@ -1,11 +1,44 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../lib/api';
 import type { Order } from '../../lib/api';
 import * as XLSX from 'xlsx';
-import { Loader2, Download, Filter, RefreshCw, ChevronLeft, ChevronRight, Phone, MapPin, Calendar } from 'lucide-react';
+import { Loader2, Download, Filter, RefreshCw, ChevronLeft, ChevronRight, Phone, MapPin, Calendar, Volume2, VolumeX } from 'lucide-react';
+
+const playNotificationSound = () => {
+  try {
+    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    
+    // First tone (higher pitch)
+    const osc1 = audioCtx.createOscillator();
+    const gain1 = audioCtx.createGain();
+    osc1.connect(gain1);
+    gain1.connect(audioCtx.destination);
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+    gain1.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+    osc1.start(audioCtx.currentTime);
+    osc1.stop(audioCtx.currentTime + 0.4);
+
+    // Second tone (lower pitch, slightly delayed)
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(440, audioCtx.currentTime + 0.15); // A4
+    gain2.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain2.gain.setValueAtTime(0.1, audioCtx.currentTime + 0.15);
+    gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.65);
+    osc2.start(audioCtx.currentTime + 0.15);
+    osc2.stop(audioCtx.currentTime + 0.65);
+  } catch (err) {
+    console.error('Failed to play audio notification', err);
+  }
+};
 
 export const Orders: React.FC = () => {
   const { t } = useTranslation();
@@ -16,6 +49,11 @@ export const Orders: React.FC = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Sound and Autorefresh Polling State/Refs
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const knownOrderIdsRef = useRef<Set<string>>(new Set());
+  const isInitializedRef = useRef(false);
 
   // Filters State
   const [statusFilter, setStatusFilter] = useState('');
@@ -51,9 +89,9 @@ export const Orders: React.FC = () => {
   }, [isAuthenticated]);
 
   // Load Orders
-  const fetchOrders = async () => {
+  const fetchOrders = async (isSilent = false) => {
     try {
-      setIsLoading(true);
+      if (!isSilent) setIsLoading(true);
       setError(null);
       
       const filters = {
@@ -68,10 +106,15 @@ export const Orders: React.FC = () => {
       const res = await api.orders.list(filters);
       setOrders(res.orders);
       setTotalCount(res.count);
+
+      // Populate knownOrderIdsRef on first load
+      if (knownOrderIdsRef.current.size === 0 && res.orders) {
+        res.orders.forEach((o) => knownOrderIdsRef.current.add(o.id));
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to fetch orders');
     } finally {
-      setIsLoading(false);
+      if (!isSilent) setIsLoading(false);
     }
   };
 
@@ -80,6 +123,52 @@ export const Orders: React.FC = () => {
       fetchOrders();
     }
   }, [isAuthenticated, statusFilter, wilayaFilter, dateFrom, dateTo, currentPage]);
+
+  // Polling for auto-refresh and sound notifications
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const checkNewOrders = async () => {
+      try {
+        // Fetch the single latest new order to check for notifications
+        const latestNewRes = await api.orders.list({ status: 'new', limit: 1 });
+        if (latestNewRes.orders && latestNewRes.orders.length > 0) {
+          const latestOrder = latestNewRes.orders[0];
+          
+          // If this is a brand new order we haven't seen yet
+          if (!knownOrderIdsRef.current.has(latestOrder.id)) {
+            knownOrderIdsRef.current.add(latestOrder.id);
+            
+            // Play sound! (Only if this is not the very first load of the page)
+            if (isInitializedRef.current && soundEnabled) {
+              playNotificationSound();
+            }
+          }
+        }
+
+        // Mark as initialized after the first check
+        isInitializedRef.current = true;
+
+        // Auto-refresh the current list silently
+        await fetchOrders(true);
+      } catch (err) {
+        console.error('Error during auto-refresh polling', err);
+      }
+    };
+
+    // Set initialized to true after initial fetch completes
+    const initialTimeout = setTimeout(() => {
+      isInitializedRef.current = true;
+    }, 2000);
+
+    // Check every 15 seconds
+    const interval = setInterval(checkNewOrders, 15000);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+    };
+  }, [isAuthenticated, statusFilter, wilayaFilter, dateFrom, dateTo, currentPage, soundEnabled]);
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
@@ -174,13 +263,28 @@ export const Orders: React.FC = () => {
           </p>
         </div>
         
-        <button
-          onClick={exportToExcel}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-card hover:bg-neutral-800 border border-brand-border text-white text-xs font-bold rounded-xl transition-all cursor-pointer"
-        >
-          <Download className="w-4 h-4 text-brand-orange" />
-          <span>{t('admin.export_excel')}</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+              soundEnabled
+                ? 'bg-green-500/10 border-green-500/20 text-green-400 hover:bg-green-500/20'
+                : 'bg-neutral-900 border-brand-border text-brand-gray hover:text-white'
+            }`}
+            title={soundEnabled ? "Muter le son" : "Activer le son"}
+          >
+            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            <span>{soundEnabled ? "Son activé" : "Son désactivé"}</span>
+          </button>
+
+          <button
+            onClick={exportToExcel}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-card hover:bg-neutral-800 border border-brand-border text-white text-xs font-bold rounded-xl transition-all cursor-pointer"
+          >
+            <Download className="w-4 h-4 text-brand-orange" />
+            <span>{t('admin.export_excel')}</span>
+          </button>
+        </div>
       </div>
 
       {/* Filters Box */}
