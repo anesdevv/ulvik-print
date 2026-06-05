@@ -3,10 +3,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 // Import routes
-import productsRouter from './routes/products';
-import ordersRouter from './routes/orders';
-import deliveryRouter from './routes/delivery';
-import uploadRouter from './routes/upload';
+import productsRouter from './routes/products.js';
+import ordersRouter from './routes/orders.js';
+import deliveryRouter from './routes/delivery.js';
+import uploadRouter from './routes/upload.js';
 
 dotenv.config();
 
