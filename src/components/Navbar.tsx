@@ -68,8 +68,8 @@ export const Navbar: React.FC = () => {
             <span>{i18n.language === 'fr' ? 'EN' : 'FR'}</span>
           </button>
 
-          {/* Admin Login/Logout */}
-          {isAuthenticated ? (
+          {/* Admin Logout (only shown if logged in) */}
+          {isAuthenticated && (
             <button
               onClick={logout}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-950/40 border border-red-900/30 text-red-400 hover:bg-red-900/40 hover:text-red-300 transition-all text-sm cursor-pointer font-medium"
@@ -77,13 +77,6 @@ export const Navbar: React.FC = () => {
               <LogOut className="w-4 h-4" />
               <span>{t('nav.logout')}</span>
             </button>
-          ) : (
-            <Link
-              to="/admin/login"
-              className="text-xs text-brand-gray hover:text-brand-orange transition-colors"
-            >
-              {t('nav.admin')}
-            </Link>
           )}
         </div>
 
@@ -124,58 +117,48 @@ export const Navbar: React.FC = () => {
             {t('nav.about')}
           </Link>
 
-          {isAuthenticated ? (
-            <>
-              <div className="border-t border-brand-border pt-4 mt-2 flex flex-col gap-3">
-                <Link
-                  to="/admin"
-                  onClick={() => setMobileOpen(false)}
-                  className={`transition-colors py-1 flex items-center gap-2 ${isActive('/admin')}`}
-                >
-                  <Settings className="w-4 h-4" />
-                  {t('nav.dashboard')}
-                </Link>
-                <Link
-                  to="/admin/products"
-                  onClick={() => setMobileOpen(false)}
-                  className={`transition-colors py-1 ${isActive('/admin/products')}`}
-                >
-                  {t('admin.products_title')}
-                </Link>
-                <Link
-                  to="/admin/orders"
-                  onClick={() => setMobileOpen(false)}
-                  className={`transition-colors py-1 ${isActive('/admin/orders')}`}
-                >
-                  {t('admin.orders_title')}
-                </Link>
-                <Link
-                  to="/admin/delivery"
-                  onClick={() => setMobileOpen(false)}
-                  className={`transition-colors py-1 ${isActive('/admin/delivery')}`}
-                >
-                  {t('admin.delivery_title')}
-                </Link>
-                <button
-                  onClick={() => {
-                    logout();
-                    setMobileOpen(false);
-                  }}
-                  className="flex items-center justify-center gap-2 py-2 mt-2 rounded-lg bg-red-950/40 border border-red-900/30 text-red-400 cursor-pointer"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>{t('nav.logout')}</span>
-                </button>
-              </div>
-            </>
-          ) : (
-            <Link
-              to="/admin/login"
-              onClick={() => setMobileOpen(false)}
-              className="text-xs text-brand-gray py-1"
-            >
-              {t('nav.admin')}
-            </Link>
+          {isAuthenticated && (
+            <div className="border-t border-brand-border pt-4 mt-2 flex flex-col gap-3">
+              <Link
+                to="/admin"
+                onClick={() => setMobileOpen(false)}
+                className={`transition-colors py-1 flex items-center gap-2 ${isActive('/admin')}`}
+              >
+                <Settings className="w-4 h-4" />
+                {t('nav.dashboard')}
+              </Link>
+              <Link
+                to="/admin/products"
+                onClick={() => setMobileOpen(false)}
+                className={`transition-colors py-1 ${isActive('/admin/products')}`}
+              >
+                {t('admin.products_title')}
+              </Link>
+              <Link
+                to="/admin/orders"
+                onClick={() => setMobileOpen(false)}
+                className={`transition-colors py-1 ${isActive('/admin/orders')}`}
+              >
+                {t('admin.orders_title')}
+              </Link>
+              <Link
+                to="/admin/delivery"
+                onClick={() => setMobileOpen(false)}
+                className={`transition-colors py-1 ${isActive('/admin/delivery')}`}
+              >
+                {t('admin.delivery_title')}
+              </Link>
+              <button
+                onClick={() => {
+                  logout();
+                  setMobileOpen(false);
+                }}
+                className="flex items-center justify-center gap-2 py-2 mt-2 rounded-lg bg-red-950/40 border border-red-900/30 text-red-400 cursor-pointer"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>{t('nav.logout')}</span>
+              </button>
+            </div>
           )}
         </div>
       )}
