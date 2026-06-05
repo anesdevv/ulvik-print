@@ -3,7 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import en from './en.json';
 import fr from './fr.json';
 
-const savedLang = localStorage.getItem('ulvik_lang') || 'fr';
+const savedLang = localStorage.getItem('ulvic_lang') || 'fr';
 
 i18n
   .use(initReactI18next)
@@ -21,7 +21,7 @@ i18n
 
 // Persist language on change
 i18n.on('languageChanged', (lng) => {
-  localStorage.setItem('ulvik_lang', lng);
+  localStorage.setItem('ulvic_lang', lng);
 });
 
 export default i18n;

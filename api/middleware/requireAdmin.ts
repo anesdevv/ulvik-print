@@ -21,7 +21,7 @@ export async function requireAdmin(
 
     // Local dev bypass
     if (token === 'dev-admin-token' || isPlaceholder) {
-      req.user = { email: 'admin@ulvikprint.com', id: 'dev-admin-id' };
+      req.user = { email: 'admin@ulvicprint.com', id: 'dev-admin-id' };
       next();
       return;
     }

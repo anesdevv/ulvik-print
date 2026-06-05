@@ -257,7 +257,7 @@ export const Orders: React.FC = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Commandes');
 
     const today = new Date().toISOString().slice(0, 10);
-    XLSX.writeFile(workbook, `ulvik-orders-${today}.xlsx`);
+    XLSX.writeFile(workbook, `ulvic-orders-${today}.xlsx`);
   };
 
   const getStatusBg = (status: string) => {

@@ -25,7 +25,7 @@ export const Navbar: React.FC = () => {
         {/* Brand Logo */}
         <Link to="/" className="flex items-center gap-2 text-white font-heading font-bold text-xl tracking-wider hover:opacity-90">
           <Shirt className="h-6 w-6 text-brand-orange animate-pulse" />
-          <span>ULVIK<span className="text-brand-orange text-xs uppercase tracking-widest ml-1 font-sans">Print</span></span>
+          <span>ULVIC<span className="text-brand-orange text-xs uppercase tracking-widest ml-1 font-sans">Print</span></span>
         </Link>
 
         {/* Desktop Links */}

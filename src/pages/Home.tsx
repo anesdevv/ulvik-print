@@ -55,7 +55,7 @@ export const Home: React.FC = () => {
           </div>
           
           <h1 className="text-4xl md:text-6xl font-heading font-extrabold tracking-tight text-white leading-tight">
-            Wear Your Mind with <span className="text-brand-orange">Ulvik Print</span>
+            Wear Your Mind with <span className="text-brand-orange">Ulvic Print</span>
           </h1>
           
           <p className="text-brand-gray text-base md:text-lg max-w-xl leading-relaxed mt-2">

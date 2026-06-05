@@ -19,8 +19,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // Check session storage on mount
-    const savedToken = sessionStorage.getItem('ulvik_token');
-    const savedUser = sessionStorage.getItem('ulvik_user');
+    const savedToken = sessionStorage.getItem('ulvic_token');
+    const savedUser = sessionStorage.getItem('ulvic_user');
 
     if (savedToken && savedUser) {
       setToken(savedToken);
@@ -34,16 +34,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // Local dev bypass for testing when Supabase keys are placeholders
       const isPlaceholder = !import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL.includes('placeholder.supabase.co');
-      if (isPlaceholder || (email === 'admin@ulvikprint.com' && password === 'admin')) {
+      if (isPlaceholder || (email === 'admin@ulvicprint.com' && password === 'admin')) {
         console.warn('Using local dev admin bypass login');
-        const dummyUser = { email: 'admin@ulvikprint.com', id: 'dev-admin-id' };
+        const dummyUser = { email: 'admin@ulvicprint.com', id: 'dev-admin-id' };
         const dummyToken = 'dev-admin-token';
 
         setToken(dummyToken);
         setUser(dummyUser);
 
-        sessionStorage.setItem('ulvik_token', dummyToken);
-        sessionStorage.setItem('ulvik_user', JSON.stringify(dummyUser));
+        sessionStorage.setItem('ulvic_token', dummyToken);
+        sessionStorage.setItem('ulvic_user', JSON.stringify(dummyUser));
         return;
       }
 
@@ -63,8 +63,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setToken(jwt);
         setUser(userData);
 
-        sessionStorage.setItem('ulvik_token', jwt);
-        sessionStorage.setItem('ulvik_user', JSON.stringify(userData));
+        sessionStorage.setItem('ulvic_token', jwt);
+        sessionStorage.setItem('ulvic_user', JSON.stringify(userData));
       }
     } catch (err: any) {
       setIsLoading(false);
@@ -83,8 +83,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setToken(null);
       setUser(null);
-      sessionStorage.removeItem('ulvik_token');
-      sessionStorage.removeItem('ulvik_user');
+      sessionStorage.removeItem('ulvic_token');
+      sessionStorage.removeItem('ulvic_user');
       setIsLoading(false);
     }
   };

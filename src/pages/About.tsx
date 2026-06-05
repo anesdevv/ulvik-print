@@ -100,7 +100,7 @@ export const About: React.FC = () => {
         <div className="lg:col-span-7 flex flex-col gap-4">
           <div className="bg-brand-card rounded-2xl border border-brand-border p-3 overflow-hidden shadow-xl aspect-[16/10] w-full">
             <iframe
-              title="Ulvik Print Store Location"
+              title="Ulvic Print Store Location"
               src="https://maps.google.com/maps?q=34.882157,-1.307842&t=&z=16&ie=UTF8&iwloc=&output=embed"
               width="100%"
               height="100%"

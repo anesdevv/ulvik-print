@@ -31,7 +31,7 @@ app.use('/api/upload', uploadRouter);
 app.get('/api', (req: Request, res: Response) => {
   res.json({
     status: 'ok',
-    message: 'Ulvik Print API is running',
+    message: 'Ulvic Print API is running',
     version: '1.0.0'
   });
 });

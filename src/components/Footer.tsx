@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 text-white font-heading font-bold text-lg tracking-wider">
             <Shirt className="h-5 w-5 text-brand-orange" />
-            <span>ULVIK<span className="text-brand-orange text-xs uppercase tracking-widest ml-1 font-sans">Print</span></span>
+            <span>ULVIC<span className="text-brand-orange text-xs uppercase tracking-widest ml-1 font-sans">Print</span></span>
           </div>
           <p className="text-brand-gray text-sm max-w-xs leading-relaxed">
             {t('home.subtitle')}
@@ -71,7 +71,7 @@ export const Footer: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto pt-8 border-t border-brand-border text-center text-xs text-brand-gray">
-        <p>&copy; {currentYear} Ulvik Print. All rights reserved.</p>
+        <p>&copy; {currentYear} Ulvic Print. All rights reserved.</p>
       </div>
     </footer>
   );

@@ -6,7 +6,7 @@ async function request<T>(
   body?: any,
   isMultipart: boolean = false
 ): Promise<T> {
-  const token = sessionStorage.getItem('ulvik_token');
+  const token = sessionStorage.getItem('ulvic_token');
   const headers: Record<string, string> = {};
 
   if (token) {
