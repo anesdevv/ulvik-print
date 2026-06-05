@@ -20,10 +20,8 @@ export const Products: React.FC = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   
   // Form Fields
-  const [nameEn, setNameEn] = useState('');
-  const [nameFr, setNameFr] = useState('');
-  const [descEn, setDescEn] = useState('');
-  const [descFr, setDescFr] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
   const [inStock, setInStock] = useState(true);
@@ -65,10 +63,8 @@ export const Products: React.FC = () => {
   }, [isAuthenticated]);
 
   const resetForm = () => {
-    setNameEn('');
-    setNameFr('');
-    setDescEn('');
-    setDescFr('');
+    setName('');
+    setDescription('');
     setPrice('');
     setCategory('');
     setInStock(true);
@@ -87,10 +83,8 @@ export const Products: React.FC = () => {
 
   const openEditModal = (product: Product) => {
     setEditingProduct(product);
-    setNameEn(product.name_en);
-    setNameFr(product.name_fr);
-    setDescEn(product.description_en || '');
-    setDescFr(product.description_fr || '');
+    setName(product.name_fr);
+    setDescription(product.description_fr || '');
     setPrice(product.price.toString());
     setCategory(product.category || '');
     setInStock(product.in_stock);
@@ -174,16 +168,16 @@ export const Products: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!nameEn.trim() || !nameFr.trim() || !price || isNaN(Number(price))) {
-      alert('Veuillez remplir les champs obligatoires (Nom EN/FR et Prix).');
+    if (!name.trim() || !price || isNaN(Number(price))) {
+      alert('Veuillez remplir les champs obligatoires (Nom et Prix).');
       return;
     }
 
     const payload: Partial<Product> = {
-      name_en: nameEn.trim(),
-      name_fr: nameFr.trim(),
-      description_en: descEn.trim() || undefined,
-      description_fr: descFr.trim() || undefined,
+      name_en: name.trim(),
+      name_fr: name.trim(),
+      description_en: description.trim() || undefined,
+      description_fr: description.trim() || undefined,
       price: Number(price),
       category: category.trim() || undefined,
       images,
@@ -285,10 +279,7 @@ export const Products: React.FC = () => {
                         
                         {/* Title */}
                         <td className="py-4 px-6">
-                          <div className="flex flex-col">
-                            <span className="font-semibold text-white">{product.name_fr}</span>
-                            <span className="text-[11px] text-brand-gray">{product.name_en}</span>
-                          </div>
+                          <span className="font-semibold text-white">{product.name_fr}</span>
                         </td>
 
                         {/* Price */}
@@ -373,30 +364,17 @@ export const Products: React.FC = () => {
             {/* Modal Body / Scrollable Form */}
             <form onSubmit={handleSubmit} className="flex-grow overflow-y-auto p-6 flex flex-col gap-6">
               
-              {/* Product Names (Bilingual) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs font-semibold text-brand-gray">{t('product_form.name_fr')} *</label>
-                  <input
-                    type="text"
-                    required
-                    value={nameFr}
-                    onChange={(e) => setNameFr(e.target.value)}
-                    placeholder="Ex: T-shirt Vintage Algérie"
-                    className="w-full bg-brand-dark border border-brand-border focus:border-brand-orange rounded-xl px-4 py-2.5 text-white transition-all outline-none text-sm"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs font-semibold text-brand-gray">{t('product_form.name_en')} *</label>
-                  <input
-                    type="text"
-                    required
-                    value={nameEn}
-                    onChange={(e) => setNameEn(e.target.value)}
-                    placeholder="Ex: Vintage Algeria T-Shirt"
-                    className="w-full bg-brand-dark border border-brand-border focus:border-brand-orange rounded-xl px-4 py-2.5 text-white transition-all outline-none text-sm"
-                  />
-                </div>
+              {/* Product Name */}
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-semibold text-brand-gray">Nom du produit / Product Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Ex: T-shirt Vintage"
+                  className="w-full bg-brand-dark border border-brand-border focus:border-brand-orange rounded-xl px-4 py-2.5 text-white transition-all outline-none text-sm"
+                />
               </div>
 
               {/* Price & Category */}
@@ -424,28 +402,16 @@ export const Products: React.FC = () => {
                 </div>
               </div>
 
-              {/* Descriptions (Bilingual) */}
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs font-semibold text-brand-gray">{t('product_form.desc_fr')}</label>
-                  <textarea
-                    rows={3}
-                    value={descFr}
-                    onChange={(e) => setDescFr(e.target.value)}
-                    placeholder="Description en français..."
-                    className="w-full bg-brand-dark border border-brand-border focus:border-brand-orange rounded-xl px-4 py-2.5 text-white transition-all outline-none text-sm resize-none"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs font-semibold text-brand-gray">{t('product_form.desc_en')}</label>
-                  <textarea
-                    rows={3}
-                    value={descEn}
-                    onChange={(e) => setDescEn(e.target.value)}
-                    placeholder="Description in English..."
-                    className="w-full bg-brand-dark border border-brand-border focus:border-brand-orange rounded-xl px-4 py-2.5 text-white transition-all outline-none text-sm resize-none"
-                  />
-                </div>
+              {/* Description */}
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-semibold text-brand-gray">Description</label>
+                <textarea
+                  rows={3}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Description du produit..."
+                  className="w-full bg-brand-dark border border-brand-border focus:border-brand-orange rounded-xl px-4 py-2.5 text-white transition-all outline-none text-sm resize-none"
+                />
               </div>
 
               {/* Image Upload Block */}
