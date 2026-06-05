@@ -5,36 +5,43 @@ import { useAuth } from '../../context/AuthContext';
 import { api } from '../../lib/api';
 import type { Order } from '../../lib/api';
 import * as XLSX from 'xlsx';
-import { Loader2, Download, Filter, RefreshCw, ChevronLeft, ChevronRight, Phone, MapPin, Calendar, Volume2, VolumeX } from 'lucide-react';
+import { Loader2, Download, Filter, RefreshCw, ChevronLeft, ChevronRight, Phone, MapPin, Calendar, Volume2, VolumeX, Trash2 } from 'lucide-react';
+
+let globalAudioCtx: AudioContext | null = null;
 
 const playNotificationSound = () => {
   try {
-    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    if (!globalAudioCtx) {
+      globalAudioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    if (globalAudioCtx.state === 'suspended') {
+      globalAudioCtx.resume();
+    }
     
     // First tone (higher pitch)
-    const osc1 = audioCtx.createOscillator();
-    const gain1 = audioCtx.createGain();
+    const osc1 = globalAudioCtx.createOscillator();
+    const gain1 = globalAudioCtx.createGain();
     osc1.connect(gain1);
-    gain1.connect(audioCtx.destination);
+    gain1.connect(globalAudioCtx.destination);
     osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-    gain1.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    gain1.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-    osc1.start(audioCtx.currentTime);
-    osc1.stop(audioCtx.currentTime + 0.4);
+    osc1.frequency.setValueAtTime(587.33, globalAudioCtx.currentTime); // D5
+    gain1.gain.setValueAtTime(0.1, globalAudioCtx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.001, globalAudioCtx.currentTime + 0.4);
+    osc1.start(globalAudioCtx.currentTime);
+    osc1.stop(globalAudioCtx.currentTime + 0.4);
 
     // Second tone (lower pitch, slightly delayed)
-    const osc2 = audioCtx.createOscillator();
-    const gain2 = audioCtx.createGain();
+    const osc2 = globalAudioCtx.createOscillator();
+    const gain2 = globalAudioCtx.createGain();
     osc2.connect(gain2);
-    gain2.connect(audioCtx.destination);
+    gain2.connect(globalAudioCtx.destination);
     osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(440, audioCtx.currentTime + 0.15); // A4
-    gain2.gain.setValueAtTime(0, audioCtx.currentTime);
-    gain2.gain.setValueAtTime(0.1, audioCtx.currentTime + 0.15);
-    gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.65);
-    osc2.start(audioCtx.currentTime + 0.15);
-    osc2.stop(audioCtx.currentTime + 0.65);
+    osc2.frequency.setValueAtTime(440, globalAudioCtx.currentTime + 0.15); // A4
+    gain2.gain.setValueAtTime(0, globalAudioCtx.currentTime);
+    gain2.gain.setValueAtTime(0.1, globalAudioCtx.currentTime + 0.15);
+    gain2.gain.exponentialRampToValueAtTime(0.001, globalAudioCtx.currentTime + 0.65);
+    osc2.start(globalAudioCtx.currentTime + 0.15);
+    osc2.stop(globalAudioCtx.currentTime + 0.65);
   } catch (err) {
     console.error('Failed to play audio notification', err);
   }
@@ -169,6 +176,38 @@ export const Orders: React.FC = () => {
       clearInterval(interval);
     };
   }, [isAuthenticated, statusFilter, wilayaFilter, dateFrom, dateTo, currentPage, soundEnabled]);
+
+  // Unlock AudioContext on first user interaction
+  useEffect(() => {
+    const handleUnlock = () => {
+      try {
+        if (!globalAudioCtx) {
+          globalAudioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
+        if (globalAudioCtx.state === 'suspended') {
+          globalAudioCtx.resume();
+        }
+        document.removeEventListener('click', handleUnlock);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    document.addEventListener('click', handleUnlock);
+    return () => document.removeEventListener('click', handleUnlock);
+  }, []);
+
+  const handleDeleteOrder = async (id: string) => {
+    if (!window.confirm('Voulez-vous vraiment supprimer cette commande ? Cette action est irréversible.')) {
+      return;
+    }
+    try {
+      await api.orders.delete(id);
+      setOrders((prev) => prev.filter((o) => o.id !== id));
+      setTotalCount((c) => Math.max(0, c - 1));
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete order');
+    }
+  };
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
@@ -460,21 +499,30 @@ export const Orders: React.FC = () => {
                         </div>
                       </td>
 
-                      {/* Status Dropdown */}
+                      {/* Status Dropdown & Action */}
                       <td className="py-4 px-6">
-                        <select
-                          value={order.status}
-                          onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                          className={`px-2 py-1 rounded-lg border text-xs font-semibold cursor-pointer outline-none transition-all ${getStatusBg(
-                            order.status
-                          )}`}
-                        >
-                          <option value="new">{t('status.new')}</option>
-                          <option value="confirmed">{t('status.confirmed')}</option>
-                          <option value="shipped">{t('status.shipped')}</option>
-                          <option value="delivered">{t('status.delivered')}</option>
-                          <option value="cancelled">{t('status.cancelled')}</option>
-                        </select>
+                        <div className="flex items-center gap-3">
+                          <select
+                            value={order.status}
+                            onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                            className={`px-2 py-1 rounded-lg border text-xs font-semibold cursor-pointer outline-none transition-all ${getStatusBg(
+                              order.status
+                            )}`}
+                          >
+                            <option value="new">{t('status.new')}</option>
+                            <option value="confirmed">{t('status.confirmed')}</option>
+                            <option value="shipped">{t('status.shipped')}</option>
+                            <option value="delivered">{t('status.delivered')}</option>
+                            <option value="cancelled">{t('status.cancelled')}</option>
+                          </select>
+                          <button
+                            onClick={() => handleDeleteOrder(order.id)}
+                            className="p-1.5 rounded-lg border border-brand-border hover:border-red-500 text-brand-gray hover:text-red-400 transition-all cursor-pointer"
+                            title="Supprimer la commande"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

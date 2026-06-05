@@ -95,6 +95,7 @@ export const api = {
       return request<{ orders: Order[]; count: number; page: number; limit: number }>(`/orders?${params.toString()}`);
     },
     updateStatus: (id: string, status: string) => request<Order>(`/orders/${id}/status`, 'PATCH', { status }),
+    delete: (id: string) => request<{ message: string }>(`/orders/${id}`, 'DELETE'),
   },
   delivery: {
     list: () => request<DeliveryPrice[]>('/delivery'),

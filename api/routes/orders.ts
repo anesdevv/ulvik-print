@@ -282,4 +282,36 @@ router.patch('/:id/status', requireAdmin, async (req: AuthenticatedRequest, res:
   }
 });
 
+// DELETE /api/orders/:id - Admin only (Delete order)
+router.delete('/:id', requireAdmin, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    if (isPlaceholder) {
+      const index = mockOrders.findIndex(o => o.id === id);
+      if (index === -1) {
+        res.status(404).json({ error: 'Order not found' });
+        return;
+      }
+      mockOrders = mockOrders.filter(o => o.id !== id);
+      res.json({ message: 'Order deleted successfully' });
+      return;
+    }
+
+    const { error } = await supabase
+      .from('orders')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      res.status(500).json({ error: error.message });
+      return;
+    }
+
+    res.json({ message: 'Order deleted successfully' });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;

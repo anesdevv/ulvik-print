@@ -6,34 +6,41 @@ import { api } from '../../lib/api';
 import type { Order } from '../../lib/api';
 import { ShoppingBag, AlertTriangle, ListOrdered, ClipboardList, Loader2, ArrowRight, TrendingUp, Volume2, VolumeX } from 'lucide-react';
 
+let globalAudioCtx: AudioContext | null = null;
+
 const playNotificationSound = () => {
   try {
-    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    if (!globalAudioCtx) {
+      globalAudioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    if (globalAudioCtx.state === 'suspended') {
+      globalAudioCtx.resume();
+    }
     
     // First tone (higher pitch)
-    const osc1 = audioCtx.createOscillator();
-    const gain1 = audioCtx.createGain();
+    const osc1 = globalAudioCtx.createOscillator();
+    const gain1 = globalAudioCtx.createGain();
     osc1.connect(gain1);
-    gain1.connect(audioCtx.destination);
+    gain1.connect(globalAudioCtx.destination);
     osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-    gain1.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    gain1.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-    osc1.start(audioCtx.currentTime);
-    osc1.stop(audioCtx.currentTime + 0.4);
+    osc1.frequency.setValueAtTime(587.33, globalAudioCtx.currentTime); // D5
+    gain1.gain.setValueAtTime(0.1, globalAudioCtx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.001, globalAudioCtx.currentTime + 0.4);
+    osc1.start(globalAudioCtx.currentTime);
+    osc1.stop(globalAudioCtx.currentTime + 0.4);
 
     // Second tone (lower pitch, slightly delayed)
-    const osc2 = audioCtx.createOscillator();
-    const gain2 = audioCtx.createGain();
+    const osc2 = globalAudioCtx.createOscillator();
+    const gain2 = globalAudioCtx.createGain();
     osc2.connect(gain2);
-    gain2.connect(audioCtx.destination);
+    gain2.connect(globalAudioCtx.destination);
     osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(440, audioCtx.currentTime + 0.15); // A4
-    gain2.gain.setValueAtTime(0, audioCtx.currentTime);
-    gain2.gain.setValueAtTime(0.1, audioCtx.currentTime + 0.15);
-    gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.65);
-    osc2.start(audioCtx.currentTime + 0.15);
-    osc2.stop(audioCtx.currentTime + 0.65);
+    osc2.frequency.setValueAtTime(440, globalAudioCtx.currentTime + 0.15); // A4
+    gain2.gain.setValueAtTime(0, globalAudioCtx.currentTime);
+    gain2.gain.setValueAtTime(0.1, globalAudioCtx.currentTime + 0.15);
+    gain2.gain.exponentialRampToValueAtTime(0.001, globalAudioCtx.currentTime + 0.65);
+    osc2.start(globalAudioCtx.currentTime + 0.15);
+    osc2.stop(globalAudioCtx.currentTime + 0.65);
   } catch (err) {
     console.error('Failed to play audio notification', err);
   }
@@ -159,6 +166,25 @@ export const Dashboard: React.FC = () => {
       clearInterval(interval);
     };
   }, [isAuthenticated, soundEnabled]);
+
+  // Unlock AudioContext on first user interaction
+  useEffect(() => {
+    const handleUnlock = () => {
+      try {
+        if (!globalAudioCtx) {
+          globalAudioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
+        if (globalAudioCtx.state === 'suspended') {
+          globalAudioCtx.resume();
+        }
+        document.removeEventListener('click', handleUnlock);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    document.addEventListener('click', handleUnlock);
+    return () => document.removeEventListener('click', handleUnlock);
+  }, []);
 
   if (authLoading || !isAuthenticated) {
     return (
