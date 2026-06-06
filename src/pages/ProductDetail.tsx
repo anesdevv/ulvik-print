@@ -165,9 +165,23 @@ export const ProductDetail: React.FC = () => {
             <h1 className="text-3xl md:text-4xl font-heading font-extrabold text-white mb-3 leading-tight">
               {name}
             </h1>
-            <p className="text-2xl font-bold text-white">
-              {product.price.toLocaleString()} <span className="text-brand-orange text-sm font-semibold">{t('home.currency')}</span>
-            </p>
+            {product.discount_price ? (
+              <div className="flex items-baseline gap-3">
+                <span className="text-3xl font-extrabold text-white">
+                  {product.discount_price.toLocaleString()} <span className="text-brand-orange text-base font-semibold">{t('home.currency')}</span>
+                </span>
+                <span className="text-base text-brand-gray line-through font-semibold">
+                  {product.price.toLocaleString()} {t('home.currency')}
+                </span>
+                <span className="bg-brand-orange/15 text-brand-orange font-extrabold text-xs px-2.5 py-1 rounded-lg border border-brand-orange/20 animate-pulse">
+                  -{Math.round(((product.price - product.discount_price) / product.price) * 100)}% OFF
+                </span>
+              </div>
+            ) : (
+              <p className="text-2xl font-bold text-white">
+                {product.price.toLocaleString()} <span className="text-brand-orange text-sm font-semibold">{t('home.currency')}</span>
+              </p>
+            )}
           </div>
 
           {/* Description */}

@@ -27,6 +27,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           loading="lazy"
         />
         
+        {/* Promo Discount Badge */}
+        {product.in_stock && product.discount_price && (
+          <div className="absolute top-3 left-3 bg-brand-orange text-white font-heading font-extrabold text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-lg border border-brand-orange/30 shadow-lg z-10 animate-pulse">
+            -{Math.round(((product.price - product.discount_price) / product.price) * 100)}%
+          </div>
+        )}
+
         {/* Out of stock overlay/badge */}
         {!product.in_stock && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-[2px]">
@@ -64,9 +71,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
         
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-brand-border">
-          <span className="text-white font-bold text-lg">
-            {product.price.toLocaleString()} <span className="text-brand-orange text-xs font-semibold">{t('home.currency')}</span>
-          </span>
+          {product.discount_price ? (
+            <div className="flex items-baseline gap-2">
+              <span className="text-white font-bold text-lg">
+                {product.discount_price.toLocaleString()} <span className="text-brand-orange text-xs font-semibold">{t('home.currency')}</span>
+              </span>
+              <span className="text-brand-gray line-through text-xs font-medium">
+                {product.price.toLocaleString()} {t('home.currency')}
+              </span>
+            </div>
+          ) : (
+            <span className="text-white font-bold text-lg">
+              {product.price.toLocaleString()} <span className="text-brand-orange text-xs font-semibold">{t('home.currency')}</span>
+            </span>
+          )}
           
           {product.in_stock && (
             <Link

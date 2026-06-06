@@ -23,6 +23,7 @@ export const Products: React.FC = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
+  const [discountPrice, setDiscountPrice] = useState('');
   const [category, setCategory] = useState('');
   const [inStock, setInStock] = useState(true);
   const [images, setImages] = useState<string[]>([]);
@@ -66,6 +67,7 @@ export const Products: React.FC = () => {
     setName('');
     setDescription('');
     setPrice('');
+    setDiscountPrice('');
     setCategory('');
     setInStock(true);
     setImages([]);
@@ -86,6 +88,7 @@ export const Products: React.FC = () => {
     setName(product.name_fr);
     setDescription(product.description_fr || '');
     setPrice(product.price.toString());
+    setDiscountPrice(product.discount_price ? product.discount_price.toString() : '');
     setCategory(product.category || '');
     setInStock(product.in_stock);
     setImages(product.images || []);
@@ -179,6 +182,7 @@ export const Products: React.FC = () => {
       description_en: description.trim() || undefined,
       description_fr: description.trim() || undefined,
       price: Number(price),
+      discount_price: discountPrice ? Number(discountPrice) : null,
       category: category.trim() || undefined,
       images,
       sizes: selectedSizes,
@@ -284,7 +288,14 @@ export const Products: React.FC = () => {
 
                         {/* Price */}
                         <td className="py-4 px-6 font-bold text-white">
-                          {product.price.toLocaleString()} DZD
+                          {product.discount_price ? (
+                            <div className="flex flex-col">
+                              <span className="text-brand-orange">{product.discount_price.toLocaleString()} DZD</span>
+                              <span className="text-xs text-brand-gray line-through font-normal">{product.price.toLocaleString()} DZD</span>
+                            </div>
+                          ) : (
+                            <span>{product.price.toLocaleString()} DZD</span>
+                          )}
                         </td>
 
                         {/* Category */}
@@ -377,8 +388,8 @@ export const Products: React.FC = () => {
                 />
               </div>
 
-              {/* Price & Category */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Price, Promo Price & Category */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex flex-col gap-2">
                   <label className="text-xs font-semibold text-brand-gray">{t('product_form.price')} *</label>
                   <input
@@ -387,6 +398,16 @@ export const Products: React.FC = () => {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     placeholder="Ex: 2200"
+                    className="w-full bg-brand-dark border border-brand-border focus:border-brand-orange rounded-xl px-4 py-2.5 text-white transition-all outline-none text-sm"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-semibold text-brand-gray">Prix Promo / Discount Price (Optional)</label>
+                  <input
+                    type="number"
+                    value={discountPrice}
+                    onChange={(e) => setDiscountPrice(e.target.value)}
+                    placeholder="Ex: 1800"
                     className="w-full bg-brand-dark border border-brand-border focus:border-brand-orange rounded-xl px-4 py-2.5 text-white transition-all outline-none text-sm"
                   />
                 </div>

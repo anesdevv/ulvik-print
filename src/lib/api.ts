@@ -43,6 +43,7 @@ export interface Product {
   description_en?: string;
   description_fr?: string;
   price: number;
+  discount_price?: number | null;
   category?: string;
   images: string[];
   sizes: string[];

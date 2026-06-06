@@ -13,6 +13,7 @@ let mockProducts: any[] = [
     description_fr: "Notre t-shirt classique 100% coton de qualité supérieure, sérigraphié à Tlemcen.",
     description_en: "Our classic 100% cotton t-shirt of premium quality, screenprinted in Tlemcen.",
     price: 2500,
+    discount_price: 1900,
     category: "Classic",
     images: ["https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600&auto=format&fit=crop"],
     sizes: ["S", "M", "L", "XL"],
@@ -27,6 +28,7 @@ let mockProducts: any[] = [
     description_fr: "Design vintage rétro inspiré des années 90, coupe oversize.",
     description_en: "Retro vintage design inspired by the 90s, oversize fit.",
     price: 2900,
+    discount_price: null,
     category: "Vintage",
     images: ["https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=600&auto=format&fit=crop"],
     sizes: ["M", "L", "XL", "XXL"],
@@ -120,6 +122,7 @@ router.post('/', requireAdmin, async (req: AuthenticatedRequest, res: Response):
       description_en,
       description_fr,
       price,
+      discount_price,
       category,
       images,
       sizes,
@@ -132,6 +135,8 @@ router.post('/', requireAdmin, async (req: AuthenticatedRequest, res: Response):
       return;
     }
 
+    const formattedDiscountPrice = discount_price !== undefined && discount_price !== '' && discount_price !== null ? Number(discount_price) : null;
+
     if (isPlaceholder) {
       const newProduct = {
         id: `dev-p${Date.now()}`,
@@ -140,6 +145,7 @@ router.post('/', requireAdmin, async (req: AuthenticatedRequest, res: Response):
         description_en,
         description_fr,
         price: Number(price),
+        discount_price: formattedDiscountPrice,
         category,
         images: images || [],
         sizes: sizes || [],
@@ -161,6 +167,7 @@ router.post('/', requireAdmin, async (req: AuthenticatedRequest, res: Response):
           description_en,
           description_fr,
           price: Number(price),
+          discount_price: formattedDiscountPrice,
           category,
           images: images || [],
           sizes: sizes || [],
@@ -192,6 +199,7 @@ router.put('/:id', requireAdmin, async (req: AuthenticatedRequest, res: Response
       description_en,
       description_fr,
       price,
+      discount_price,
       category,
       images,
       sizes,
@@ -203,6 +211,8 @@ router.put('/:id', requireAdmin, async (req: AuthenticatedRequest, res: Response
       res.status(400).json({ error: 'Name (EN/FR) and Price are required' });
       return;
     }
+
+    const formattedDiscountPrice = discount_price !== undefined && discount_price !== '' && discount_price !== null ? Number(discount_price) : null;
 
     if (isPlaceholder) {
       const index = mockProducts.findIndex(p => p.id === id);
@@ -217,6 +227,7 @@ router.put('/:id', requireAdmin, async (req: AuthenticatedRequest, res: Response
         description_en,
         description_fr,
         price: Number(price),
+        discount_price: formattedDiscountPrice,
         category,
         images: images || [],
         sizes: sizes || [],
@@ -236,6 +247,7 @@ router.put('/:id', requireAdmin, async (req: AuthenticatedRequest, res: Response
         description_en,
         description_fr,
         price: Number(price),
+        discount_price: formattedDiscountPrice,
         category,
         images: images || [],
         sizes: sizes || [],

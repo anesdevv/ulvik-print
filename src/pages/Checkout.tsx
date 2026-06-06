@@ -77,7 +77,7 @@ export const Checkout: React.FC = () => {
   const { product, selectedSize, selectedColor } = state;
   const currentLang = localStorage.getItem('ulvic_lang') || 'fr';
   const productName = currentLang === 'en' ? product.name_en : product.name_fr;
-  const productPrice = product.price;
+  const productPrice = product.discount_price ? product.discount_price : product.price;
   const totalPrice = productPrice + deliveryFee;
 
   const handleSubmit = async (e: React.FormEvent) => {
