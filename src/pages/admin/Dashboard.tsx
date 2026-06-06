@@ -344,58 +344,90 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Table wrapper for responsiveness */}
-        <div className="overflow-x-auto">
+        <div>
           {recentOrders.length === 0 ? (
             <div className="text-center py-10 text-brand-gray text-sm">
               Aucune commande récente.
             </div>
           ) : (
-            <table className="w-full text-left border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-brand-border text-brand-gray font-semibold text-xs uppercase">
-                  <th className="py-3 px-4">Commande</th>
-                  <th className="py-3 px-4">Client</th>
-                  <th className="py-3 px-4">Date</th>
-                  <th className="py-3 px-4">Produit</th>
-                  <th className="py-3 px-4">Options</th>
-                  <th className="py-3 px-4">Total</th>
-                  <th className="py-3 px-4">Statut</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-brand-border">
+            <>
+              {/* Desktop Table view */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse text-sm">
+                  <thead>
+                    <tr className="border-b border-brand-border text-brand-gray font-semibold text-xs uppercase">
+                      <th className="py-3 px-4">Commande</th>
+                      <th className="py-3 px-4">Client</th>
+                      <th className="py-3 px-4">Date</th>
+                      <th className="py-3 px-4">Produit</th>
+                      <th className="py-3 px-4">Options</th>
+                      <th className="py-3 px-4">Total</th>
+                      <th className="py-3 px-4">Statut</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-brand-border">
+                    {recentOrders.map((order) => (
+                      <tr key={order.id} className="hover:bg-neutral-900/30 transition-colors">
+                        <td className="py-4 px-4 font-mono text-brand-orange font-semibold text-xs">
+                          #{order.id.slice(0, 8)}
+                        </td>
+                        <td className="py-4 px-4 font-medium text-white">
+                          {order.customer_name}
+                        </td>
+                        <td className="py-4 px-4 text-brand-gray text-xs">
+                          {new Date(order.created_at).toLocaleDateString(t('i18n.language') === 'en' ? 'en-US' : 'fr-FR', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </td>
+                        <td className="py-4 px-4 text-white max-w-[150px] truncate">
+                          {order.product_name}
+                        </td>
+                        <td className="py-4 px-4 text-brand-gray text-xs">
+                          {order.size} / {order.color}
+                        </td>
+                        <td className="py-4 px-4 font-bold text-white">
+                          {order.total_price.toLocaleString()} DZD
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getStatusColor(order.status)}`}>
+                            {t(`status.${order.status}`)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card view */}
+              <div className="md:hidden flex flex-col divide-y divide-brand-border">
                 {recentOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-neutral-900/30 transition-colors">
-                    <td className="py-4 px-4 font-mono text-brand-orange font-semibold text-xs">
-                      #{order.id.slice(0, 8)}
-                    </td>
-                    <td className="py-4 px-4 font-medium text-white">
-                      {order.customer_name}
-                    </td>
-                    <td className="py-4 px-4 text-brand-gray text-xs">
-                      {new Date(order.created_at).toLocaleDateString(t('i18n.language') === 'en' ? 'en-US' : 'fr-FR', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
-                    <td className="py-4 px-4 text-white max-w-[150px] truncate">
-                      {order.product_name}
-                    </td>
-                    <td className="py-4 px-4 text-brand-gray text-xs">
-                      {order.size} / {order.color}
-                    </td>
-                    <td className="py-4 px-4 font-bold text-white">
-                      {order.total_price.toLocaleString()} DZD
-                    </td>
-                    <td className="py-4 px-4">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getStatusColor(order.status)}`}>
+                  <div key={order.id} className="py-4 flex flex-col gap-2">
+                    <div className="flex justify-between items-center">
+                      <span className="font-mono text-brand-orange font-bold text-xs">#{order.id.slice(0, 8)}</span>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${getStatusColor(order.status)}`}>
                         {t(`status.${order.status}`)}
                       </span>
-                    </td>
-                  </tr>
+                    </div>
+                    <div className="flex flex-col text-xs text-brand-gray gap-1">
+                      <span className="font-medium text-white text-sm">{order.customer_name}</span>
+                      <span className="truncate">{order.product_name} ({order.size} / {order.color})</span>
+                      <div className="flex justify-between items-center mt-1">
+                        <span className="text-white font-bold">{order.total_price.toLocaleString()} DZD</span>
+                        <span>
+                          {new Date(order.created_at).toLocaleDateString(t('i18n.language') === 'en' ? 'en-US' : 'fr-FR', {
+                            day: 'numeric',
+                            month: 'short',
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            </>
           )}
         </div>
       </div>

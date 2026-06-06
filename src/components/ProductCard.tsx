@@ -44,7 +44,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   }, [product.discount_price]);
 
   return (
-    <div className="group relative bg-brand-card rounded-2xl border border-brand-border hover:border-brand-orange/40 transition-all duration-300 overflow-hidden flex flex-col glow-hover">
+    <Link
+      to={`/product/${product.id}`}
+      className="group relative bg-brand-card rounded-2xl border border-brand-border hover:border-brand-orange/40 transition-all duration-300 overflow-hidden flex flex-col glow-hover"
+    >
       
       {/* Product Image Wrapper */}
       <div className="relative aspect-square w-full overflow-hidden bg-neutral-900 flex items-center justify-center">
@@ -90,13 +93,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Hover overlay with detail eye button */}
         {product.in_stock && (
           <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-            <Link
-              to={`/product/${product.id}`}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white text-black font-semibold rounded-xl text-sm transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-brand-orange hover:text-white"
-            >
+            <div className="flex items-center gap-2 px-5 py-2.5 bg-white text-black font-semibold rounded-xl text-sm transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-brand-orange hover:text-white">
               <Eye className="w-4 h-4" />
               <span>{t('home.view_product')}</span>
-            </Link>
+            </div>
           </div>
         )}
       </div>
@@ -131,15 +131,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           )}
           
           {product.in_stock && (
-            <Link
-              to={`/product/${product.id}`}
-              className="text-xs text-brand-orange font-bold uppercase tracking-wider hover:text-white transition-colors md:hidden"
-            >
+            <span className="text-xs text-brand-orange font-bold uppercase tracking-wider hover:text-white transition-colors md:hidden">
               {t('home.view_product')} →
-            </Link>
+            </span>
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };

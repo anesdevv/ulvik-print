@@ -252,115 +252,183 @@ export const Products: React.FC = () => {
         </div>
       ) : (
         <div className="bg-brand-card border border-brand-border rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            {products.length === 0 ? (
-              <div className="text-center py-16 text-brand-gray text-sm">
-                Aucun produit trouvé. Cliquez sur "Ajouter un produit" pour commencer.
-              </div>
-            ) : (
-              <table className="w-full text-left border-collapse text-sm">
-                <thead>
-                  <tr className="border-b border-brand-border text-brand-gray font-semibold text-xs uppercase bg-neutral-900/10">
-                    <th className="py-4 px-6">Visuel</th>
-                    <th className="py-4 px-6">Produit</th>
-                    <th className="py-4 px-6">Prix</th>
-                    <th className="py-4 px-6">Catégorie</th>
-                    <th className="py-4 px-6">Stock</th>
-                    <th className="py-4 px-6 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-brand-border">
-                  {products.map((product) => {
-                    const thumbUrl = product.images?.[0] || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=150&auto=format&fit=crop';
-                    return (
-                      <tr key={product.id} className="hover:bg-neutral-900/20 transition-colors">
-                        {/* Thumbnail */}
-                        <td className="py-4 px-6">
-                          <div className="w-12 h-12 rounded-lg overflow-hidden bg-neutral-900 border border-brand-border flex-shrink-0 flex items-center justify-center">
-                            <img src={thumbUrl} alt={product.name_fr} className="w-full h-full object-cover" />
-                          </div>
-                        </td>
-                        
-                        {/* Title */}
-                        <td className="py-4 px-6">
-                          <span className="font-semibold text-white">{product.name_fr}</span>
-                        </td>
-
-                        {/* Price */}
-                        <td className="py-4 px-6 font-bold text-white">
-                          {product.discount_price ? (
-                            <div className="flex flex-col">
-                              <span className="text-brand-orange">{product.discount_price.toLocaleString()} DZD</span>
-                              <span className="text-xs text-brand-gray line-through font-normal">{product.price.toLocaleString()} DZD</span>
+          {products.length === 0 ? (
+            <div className="text-center py-16 text-brand-gray text-sm">
+              Aucun produit trouvé. Cliquez sur "Ajouter un produit" pour commencer.
+            </div>
+          ) : (
+            <>
+              {/* Desktop Table view */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse text-sm">
+                  <thead>
+                    <tr className="border-b border-brand-border text-brand-gray font-semibold text-xs uppercase bg-neutral-900/10">
+                      <th className="py-4 px-6">Visuel</th>
+                      <th className="py-4 px-6">Produit</th>
+                      <th className="py-4 px-6">Prix</th>
+                      <th className="py-4 px-6">Catégorie</th>
+                      <th className="py-4 px-6">Stock</th>
+                      <th className="py-4 px-6 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-brand-border">
+                    {products.map((product) => {
+                      const thumbUrl = product.images?.[0] || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=150&auto=format&fit=crop';
+                      return (
+                        <tr key={product.id} className="hover:bg-neutral-900/20 transition-colors">
+                          {/* Thumbnail */}
+                          <td className="py-4 px-6">
+                            <div className="w-12 h-12 rounded-lg overflow-hidden bg-neutral-900 border border-brand-border flex-shrink-0 flex items-center justify-center">
+                              <img src={thumbUrl} alt={product.name_fr} className="w-full h-full object-cover" />
                             </div>
-                          ) : (
-                            <span>{product.price.toLocaleString()} DZD</span>
-                          )}
-                        </td>
+                          </td>
+                          
+                          {/* Title */}
+                          <td className="py-4 px-6">
+                            <span className="font-semibold text-white">{product.name_fr}</span>
+                          </td>
 
-                        {/* Category */}
-                        <td className="py-4 px-6 text-brand-gray capitalize">
-                          {product.category || '--'}
-                        </td>
-
-                        {/* Stock status toggle */}
-                        <td className="py-4 px-6">
-                          <button
-                            type="button"
-                            onClick={() => handleToggleStock(product.id)}
-                            className="flex items-center gap-1.5 cursor-pointer text-xs"
-                            title="Cliquez pour changer le statut du stock"
-                          >
-                            {product.in_stock ? (
-                              <>
-                                <ToggleRight className="w-6 h-6 text-green-500" />
-                                <span className="text-green-400 font-medium">Disponible</span>
-                              </>
+                          {/* Price */}
+                          <td className="py-4 px-6 font-bold text-white">
+                            {product.discount_price ? (
+                              <div className="flex flex-col">
+                                <span className="text-brand-orange">{product.discount_price.toLocaleString()} DZD</span>
+                                <span className="text-xs text-brand-gray line-through font-normal">{product.price.toLocaleString()} DZD</span>
+                              </div>
                             ) : (
-                              <>
-                                <ToggleLeft className="w-6 h-6 text-red-500" />
-                                <span className="text-red-400 font-medium">Rupture</span>
-                              </>
+                              <span>{product.price.toLocaleString()} DZD</span>
                             )}
-                          </button>
-                        </td>
+                          </td>
 
-                        {/* Actions */}
-                        <td className="py-4 px-6 text-right">
-                          <div className="flex items-center justify-end gap-3">
+                          {/* Category */}
+                          <td className="py-4 px-6 text-brand-gray capitalize">
+                            {product.category || '--'}
+                          </td>
+
+                          {/* Stock status toggle */}
+                          <td className="py-4 px-6">
                             <button
-                              onClick={() => openEditModal(product)}
-                              className="p-1.5 rounded-lg border border-brand-border hover:border-brand-orange text-brand-gray hover:text-white transition-all cursor-pointer"
-                              title={t('admin.edit')}
+                              type="button"
+                              onClick={() => handleToggleStock(product.id)}
+                              className="flex items-center gap-1.5 cursor-pointer text-xs"
+                              title="Cliquez pour changer le statut du stock"
                             >
-                              <Edit2 className="w-4 h-4" />
+                              {product.in_stock ? (
+                                <>
+                                  <ToggleRight className="w-6 h-6 text-green-500" />
+                                  <span className="text-green-400 font-medium">Disponible</span>
+                                </>
+                              ) : (
+                                <>
+                                  <ToggleLeft className="w-6 h-6 text-red-500" />
+                                  <span className="text-red-400 font-medium">Rupture</span>
+                                </>
+                              )}
                             </button>
-                            <button
-                              onClick={() => handleDelete(product.id)}
-                              className="p-1.5 rounded-lg border border-brand-border hover:border-red-500 text-brand-gray hover:text-red-400 transition-all cursor-pointer"
-                              title={t('admin.delete')}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
-          </div>
+                          </td>
+
+                          {/* Actions */}
+                          <td className="py-4 px-6 text-right">
+                            <div className="flex items-center justify-end gap-3">
+                              <button
+                                onClick={() => openEditModal(product)}
+                                className="p-1.5 rounded-lg border border-brand-border hover:border-brand-orange text-brand-gray hover:text-white transition-all cursor-pointer"
+                                title={t('admin.edit')}
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(product.id)}
+                                className="p-1.5 rounded-lg border border-brand-border hover:border-red-500 text-brand-gray hover:text-red-400 transition-all cursor-pointer"
+                                title={t('admin.delete')}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card view */}
+              <div className="md:hidden flex flex-col divide-y divide-brand-border">
+                {products.map((product) => {
+                  const thumbUrl = product.images?.[0] || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=150&auto=format&fit=crop';
+                  return (
+                    <div key={product.id} className="p-4 flex gap-4 items-center">
+                      {/* Thumbnail */}
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-neutral-900 border border-brand-border flex-shrink-0 flex items-center justify-center">
+                        <img src={thumbUrl} alt={product.name_fr} className="w-full h-full object-cover" />
+                      </div>
+                      
+                      {/* Details */}
+                      <div className="flex-grow flex flex-col gap-1 min-w-0">
+                        <span className="font-semibold text-white truncate text-sm">{product.name_fr}</span>
+                        <div className="flex items-baseline gap-2">
+                          {product.discount_price ? (
+                            <>
+                              <span className="text-brand-orange font-bold text-sm">{product.discount_price.toLocaleString()} DZD</span>
+                              <span className="text-xs text-brand-gray line-through">{product.price.toLocaleString()} DZD</span>
+                            </>
+                          ) : (
+                            <span className="text-white font-bold text-sm">{product.price.toLocaleString()} DZD</span>
+                          )}
+                        </div>
+                        {product.category && (
+                          <span className="text-[10px] text-brand-gray capitalize bg-neutral-900/50 px-2 py-0.5 rounded border border-brand-border/40 w-fit">
+                            {product.category}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Actions / Stock */}
+                      <div className="flex flex-col items-end gap-2.5 flex-shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleStock(product.id)}
+                          className="cursor-pointer"
+                        >
+                          {product.in_stock ? (
+                            <span className="px-2 py-1 bg-green-500/10 text-green-400 border border-green-500/20 text-[10px] font-bold rounded-lg uppercase">En Stock</span>
+                          ) : (
+                            <span className="px-2 py-1 bg-red-500/10 text-red-400 border border-red-500/20 text-[10px] font-bold rounded-lg uppercase">Rupture</span>
+                          )}
+                        </button>
+
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => openEditModal(product)}
+                            className="p-1.5 rounded-lg border border-brand-border text-brand-gray hover:text-white"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(product.id)}
+                            className="p-1.5 rounded-lg border border-brand-border text-brand-gray hover:text-red-400"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
       )}
 
       {/* Add / Edit Modal Overlay */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-black/85 backdrop-blur-[4px]">
-          <div className="relative w-full max-w-2xl bg-brand-card rounded-2xl border border-brand-border shadow-2xl overflow-hidden max-h-[90vh] flex flex-col my-8 animate-scaleUp">
+          <div className="relative w-full max-w-2xl bg-brand-card rounded-2xl border border-brand-border shadow-2xl overflow-hidden h-full max-h-[95vh] sm:max-h-[90vh] flex flex-col my-4 sm:my-8 animate-scaleUp">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-brand-border">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-brand-border">
               <h3 className="text-white font-heading font-bold text-lg">
                 {editingProduct ? 'Modifier le produit' : 'Créer un nouveau produit'}
               </h3>
@@ -373,7 +441,7 @@ export const Products: React.FC = () => {
             </div>
 
             {/* Modal Body / Scrollable Form */}
-            <form onSubmit={handleSubmit} className="flex-grow overflow-y-auto p-6 flex flex-col gap-6">
+            <form onSubmit={handleSubmit} className="flex-grow overflow-y-auto p-4 sm:p-6 flex flex-col gap-6">
               
               {/* Product Name */}
               <div className="flex flex-col gap-2">

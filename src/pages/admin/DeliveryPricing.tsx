@@ -177,17 +177,17 @@ export const DeliveryPricing: React.FC = () => {
             <table className="w-full text-left border-collapse text-sm">
               <thead>
                 <tr className="sticky top-0 bg-neutral-950 border-b border-brand-border text-brand-gray font-semibold text-xs uppercase z-10">
-                  <th className="py-4 px-6">Wilaya</th>
-                  <th className="py-4 px-6 text-right">Frais d'expédition (DZD)</th>
+                  <th className="py-4 px-4 sm:px-6">Wilaya</th>
+                  <th className="py-4 px-4 sm:px-6 text-right">Frais d'expédition (DZD)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-brand-border">
                 {prices.map((item) => (
                   <tr key={item.wilaya} className="hover:bg-neutral-900/10 transition-colors">
-                    <td className="py-3.5 px-6 text-white font-medium">
+                    <td className="py-3.5 px-4 sm:px-6 text-white font-medium">
                       {item.wilaya}
                     </td>
-                    <td className="py-3.5 px-6 text-right">
+                    <td className="py-3.5 px-4 sm:px-6 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <div className="relative">
                           <input

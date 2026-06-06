@@ -416,79 +416,131 @@ export const Orders: React.FC = () => {
         </div>
       ) : (
         <div className="bg-brand-card border border-brand-border rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            {orders.length === 0 ? (
-              <div className="text-center py-16 text-brand-gray text-sm">
-                Aucune commande trouvée correspondant aux critères.
+          {orders.length === 0 ? (
+            <div className="text-center py-16 text-brand-gray text-sm">
+              Aucune commande trouvée correspondant aux critères.
+            </div>
+          ) : (
+            <>
+              {/* Desktop Table view */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse text-sm">
+                  <thead>
+                    <tr className="border-b border-brand-border text-brand-gray font-semibold text-xs uppercase bg-neutral-900/10">
+                      <th className="py-4 px-6">Commande</th>
+                      <th className="py-4 px-6">Client & Tél</th>
+                      <th className="py-4 px-6">Livraison</th>
+                      <th className="py-4 px-6">Produit & Options</th>
+                      <th className="py-4 px-6">Frais & Total</th>
+                      <th className="py-4 px-6">Date</th>
+                      <th className="py-4 px-6">Statut</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-brand-border">
+                    {orders.map((order) => (
+                      <tr key={order.id} className="hover:bg-neutral-900/20 transition-colors">
+                        {/* ID */}
+                        <td className="py-4 px-6 font-mono text-brand-orange font-semibold text-xs">
+                          #{order.id.slice(0, 8)}
+                        </td>
+                        
+                        {/* Client */}
+                        <td className="py-4 px-6">
+                          <div className="flex flex-col">
+                            <span className="font-semibold text-white">{order.customer_name}</span>
+                            <span className="text-[11px] text-brand-gray flex items-center gap-1 mt-0.5">
+                              <Phone className="w-3 h-3 text-brand-orange" />
+                              <a href={`tel:${order.phone}`} className="hover:underline font-mono">{order.phone}</a>
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Delivery */}
+                        <td className="py-4 px-6">
+                          <div className="flex flex-col">
+                            <span className="text-white text-xs">{order.wilaya}</span>
+                            <span className="text-[11px] text-brand-gray flex items-center gap-1 mt-0.5">
+                              <MapPin className="w-3 h-3 text-brand-orange" />
+                              <span>{order.baladiya} ({order.delivery_type === 'home' ? 'Domicile' : 'Stop desk'})</span>
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Product */}
+                        <td className="py-4 px-6">
+                          <div className="flex flex-col">
+                            <span className="text-white text-xs font-medium max-w-[160px] truncate" title={order.product_name}>
+                              {order.product_name}
+                            </span>
+                            <span className="text-[10px] text-brand-gray mt-1">
+                              Taille: <strong className="text-white">{order.size}</strong> • Couleur: <strong className="text-white">{order.color}</strong>
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Financials */}
+                        <td className="py-4 px-6">
+                          <div className="flex flex-col">
+                            <span className="text-white font-bold">{order.total_price.toLocaleString()} DZD</span>
+                            <span className="text-[10px] text-brand-gray mt-0.5">
+                              Frais: {order.delivery_fee.toLocaleString()} DZD
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Date */}
+                        <td className="py-4 px-6 text-brand-gray text-xs">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5 text-brand-orange" />
+                            <span>
+                              {new Date(order.created_at).toLocaleDateString('fr-FR', {
+                                day: 'numeric',
+                                month: 'short',
+                              })}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Status Dropdown & Action */}
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-3">
+                            <select
+                              value={order.status}
+                              onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                              className={`px-2 py-1 rounded-lg border text-xs font-semibold cursor-pointer outline-none transition-all ${getStatusBg(
+                                order.status
+                              )}`}
+                            >
+                              <option value="new">{t('status.new')}</option>
+                              <option value="confirmed">{t('status.confirmed')}</option>
+                              <option value="shipped">{t('status.shipped')}</option>
+                              <option value="delivered">{t('status.delivered')}</option>
+                              <option value="cancelled">{t('status.cancelled')}</option>
+                            </select>
+                            <button
+                              onClick={() => handleDeleteOrder(order.id)}
+                              className="p-1.5 rounded-lg border border-brand-border hover:border-red-500 text-brand-gray hover:text-red-400 transition-all cursor-pointer"
+                              title="Supprimer la commande"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            ) : (
-              <table className="w-full text-left border-collapse text-sm">
-                <thead>
-                  <tr className="border-b border-brand-border text-brand-gray font-semibold text-xs uppercase bg-neutral-900/10">
-                    <th className="py-4 px-6">Commande</th>
-                    <th className="py-4 px-6">Client & Tél</th>
-                    <th className="py-4 px-6">Livraison</th>
-                    <th className="py-4 px-6">Produit & Options</th>
-                    <th className="py-4 px-6">Frais & Total</th>
-                    <th className="py-4 px-6">Date</th>
-                    <th className="py-4 px-6">Statut</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-brand-border">
-                  {orders.map((order) => (
-                    <tr key={order.id} className="hover:bg-neutral-900/20 transition-colors">
-                      {/* ID */}
-                      <td className="py-4 px-6 font-mono text-brand-orange font-semibold text-xs">
-                        #{order.id.slice(0, 8)}
-                      </td>
-                      
-                      {/* Client */}
-                      <td className="py-4 px-6">
-                        <div className="flex flex-col">
-                          <span className="font-semibold text-white">{order.customer_name}</span>
-                          <span className="text-[11px] text-brand-gray flex items-center gap-1 mt-0.5">
-                            <Phone className="w-3 h-3 text-brand-orange" />
-                            <a href={`tel:${order.phone}`} className="hover:underline font-mono">{order.phone}</a>
-                          </span>
-                        </div>
-                      </td>
 
-                      {/* Delivery */}
-                      <td className="py-4 px-6">
-                        <div className="flex flex-col">
-                          <span className="text-white text-xs">{order.wilaya}</span>
-                          <span className="text-[11px] text-brand-gray flex items-center gap-1 mt-0.5">
-                            <MapPin className="w-3 h-3 text-brand-orange" />
-                            <span>{order.baladiya} ({order.delivery_type === 'home' ? 'Domicile' : 'Stop desk'})</span>
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Product */}
-                      <td className="py-4 px-6">
-                        <div className="flex flex-col">
-                          <span className="text-white text-xs font-medium max-w-[160px] truncate" title={order.product_name}>
-                            {order.product_name}
-                          </span>
-                          <span className="text-[10px] text-brand-gray mt-1">
-                            Taille: <strong className="text-white">{order.size}</strong> • Couleur: <strong className="text-white">{order.color}</strong>
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Financials */}
-                      <td className="py-4 px-6">
-                        <div className="flex flex-col">
-                          <span className="text-white font-bold">{order.total_price.toLocaleString()} DZD</span>
-                          <span className="text-[10px] text-brand-gray mt-0.5">
-                            Frais: {order.delivery_fee.toLocaleString()} DZD
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Date */}
-                      <td className="py-4 px-6 text-brand-gray text-xs">
-                        <div className="flex items-center gap-1">
+              {/* Mobile Card view */}
+              <div className="md:hidden flex flex-col divide-y divide-brand-border">
+                {orders.map((order) => (
+                  <div key={order.id} className="p-4 flex flex-col gap-3">
+                    {/* Top Row: ID, Date, Delete */}
+                    <div className="flex justify-between items-center">
+                      <span className="font-mono text-brand-orange font-bold text-xs">#{order.id.slice(0, 8)}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[11px] text-brand-gray flex items-center gap-1">
                           <Calendar className="w-3.5 h-3.5 text-brand-orange" />
                           <span>
                             {new Date(order.created_at).toLocaleDateString('fr-FR', {
@@ -496,40 +548,66 @@ export const Orders: React.FC = () => {
                               month: 'short',
                             })}
                           </span>
-                        </div>
-                      </td>
+                        </span>
+                        <button
+                          onClick={() => handleDeleteOrder(order.id)}
+                          className="p-1.5 rounded-lg border border-brand-border text-brand-gray hover:text-red-400"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
 
-                      {/* Status Dropdown & Action */}
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-3">
-                          <select
-                            value={order.status}
-                            onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                            className={`px-2 py-1 rounded-lg border text-xs font-semibold cursor-pointer outline-none transition-all ${getStatusBg(
-                              order.status
-                            )}`}
-                          >
-                            <option value="new">{t('status.new')}</option>
-                            <option value="confirmed">{t('status.confirmed')}</option>
-                            <option value="shipped">{t('status.shipped')}</option>
-                            <option value="delivered">{t('status.delivered')}</option>
-                            <option value="cancelled">{t('status.cancelled')}</option>
-                          </select>
-                          <button
-                            onClick={() => handleDeleteOrder(order.id)}
-                            className="p-1.5 rounded-lg border border-brand-border hover:border-red-500 text-brand-gray hover:text-red-400 transition-all cursor-pointer"
-                            title="Supprimer la commande"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+                    {/* Customer Info */}
+                    <div className="flex flex-col gap-1 text-xs">
+                      <span className="font-semibold text-white">{order.customer_name}</span>
+                      <span className="text-brand-gray flex items-center gap-1 font-mono">
+                        <Phone className="w-3 h-3 text-brand-orange" />
+                        <a href={`tel:${order.phone}`} className="hover:underline">{order.phone}</a>
+                      </span>
+                      <span className="text-brand-gray flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-brand-orange" />
+                        <span>
+                          {order.wilaya}, {order.baladiya} ({order.delivery_type === 'home' ? 'Domicile' : 'Stop desk'})
+                        </span>
+                      </span>
+                    </div>
+
+                    {/* Product Options */}
+                    <div className="bg-brand-dark/50 border border-brand-border/40 rounded-xl p-3 flex flex-col gap-1 text-xs">
+                      <span className="text-white font-medium">{order.product_name}</span>
+                      <span className="text-[11px] text-brand-gray">
+                        Taille: <strong className="text-white">{order.size}</strong> • Couleur: <strong className="text-white">{order.color}</strong>
+                      </span>
+                    </div>
+
+                    {/* Bottom Row: Status Dropdown & Total */}
+                    <div className="flex justify-between items-center pt-1">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] text-brand-gray">Total (Frais incl.)</span>
+                        <span className="text-white font-bold">{order.total_price.toLocaleString()} DZD</span>
+                        <span className="text-[9px] text-brand-gray">Frais: {order.delivery_fee.toLocaleString()} DZD</span>
+                      </div>
+                      
+                      <select
+                        value={order.status}
+                        onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                        className={`px-2.5 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer outline-none transition-all ${getStatusBg(
+                          order.status
+                        )}`}
+                      >
+                        <option value="new">{t('status.new')}</option>
+                        <option value="confirmed">{t('status.confirmed')}</option>
+                        <option value="shipped">{t('status.shipped')}</option>
+                        <option value="delivered">{t('status.delivered')}</option>
+                        <option value="cancelled">{t('status.cancelled')}</option>
+                      </select>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Pagination Footer */}
           {totalPages > 1 && (
