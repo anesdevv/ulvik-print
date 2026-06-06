@@ -90,42 +90,42 @@ export const Home: React.FC = () => {
           </p>
 
           {/* Live Countdown Timer Banner */}
-          <div className="mt-8 glassmorphic rounded-2xl border border-brand-border p-6 max-w-lg w-full flex flex-col items-center gap-4 relative overflow-hidden animate-pulse-glow">
+          <div className="mt-8 glassmorphic rounded-2xl border border-brand-border p-4 sm:p-6 max-w-lg w-full flex flex-col items-center gap-4 relative overflow-hidden animate-pulse-glow">
             {/* Ambient inner glow */}
             <div className="absolute inset-0 bg-brand-orange/5 pointer-events-none" />
             
-            <div className="flex items-center gap-2 text-xs font-heading font-bold text-brand-orange uppercase tracking-widest">
-              <span className="relative flex h-2.5 w-2.5">
+            <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-heading font-bold text-brand-orange uppercase tracking-widest text-center">
+              <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-orange opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-orange"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-orange"></span>
               </span>
               Vente Flash Spéciale / Special Flash Sale
             </div>
             
-            <div className="flex gap-4 items-center mt-1">
+            <div className="flex gap-2 sm:gap-4 items-center mt-1">
               <div className="flex flex-col items-center">
-                <div className="w-16 h-14 rounded-xl bg-brand-dark/90 border border-brand-border flex items-center justify-center font-mono text-2xl font-bold text-white shadow-inner">
+                <div className="w-12 sm:w-16 h-12 sm:h-14 rounded-xl bg-brand-dark/90 border border-brand-border flex items-center justify-center font-mono text-xl sm:text-2xl font-bold text-white shadow-inner">
                   {timeLeft.hours}
                 </div>
-                <span className="text-[10px] text-brand-gray font-semibold mt-1.5 uppercase tracking-wide">Heures</span>
+                <span className="text-[9px] sm:text-[10px] text-brand-gray font-semibold mt-1.5 uppercase tracking-wide">Heures</span>
               </div>
-              <span className="text-xl font-bold text-brand-orange -mt-5 font-mono animate-bounce">:</span>
+              <span className="text-lg sm:text-xl font-bold text-brand-orange -mt-5 font-mono animate-bounce">:</span>
               <div className="flex flex-col items-center">
-                <div className="w-16 h-14 rounded-xl bg-brand-dark/90 border border-brand-border flex items-center justify-center font-mono text-2xl font-bold text-white shadow-inner">
+                <div className="w-12 sm:w-16 h-12 sm:h-14 rounded-xl bg-brand-dark/90 border border-brand-border flex items-center justify-center font-mono text-xl sm:text-2xl font-bold text-white shadow-inner">
                   {timeLeft.minutes}
                 </div>
-                <span className="text-[10px] text-brand-gray font-semibold mt-1.5 uppercase tracking-wide">Minutes</span>
+                <span className="text-[9px] sm:text-[10px] text-brand-gray font-semibold mt-1.5 uppercase tracking-wide">Minutes</span>
               </div>
-              <span className="text-xl font-bold text-brand-orange -mt-5 font-mono animate-bounce">:</span>
+              <span className="text-lg sm:text-xl font-bold text-brand-orange -mt-5 font-mono animate-bounce">:</span>
               <div className="flex flex-col items-center">
-                <div className="w-16 h-14 rounded-xl bg-brand-dark/90 border border-brand-border flex items-center justify-center font-mono text-2xl font-bold text-brand-orange shadow-inner">
+                <div className="w-12 sm:w-16 h-12 sm:h-14 rounded-xl bg-brand-dark/90 border border-brand-border flex items-center justify-center font-mono text-xl sm:text-2xl font-bold text-brand-orange shadow-inner">
                   {timeLeft.seconds}
                 </div>
-                <span className="text-[10px] text-brand-gray font-semibold mt-1.5 uppercase tracking-wide text-brand-orange/80">Secondes</span>
+                <span className="text-[9px] sm:text-[10px] text-brand-gray font-semibold mt-1.5 uppercase tracking-wide text-brand-orange/80">Secondes</span>
               </div>
             </div>
             
-            <div className="text-[10px] text-brand-gray mt-1 font-sans italic">
+            <div className="text-[9px] sm:text-[10px] text-brand-gray mt-1 font-sans italic text-center">
               * Réduction appliquée automatiquement au panier !
             </div>
           </div>

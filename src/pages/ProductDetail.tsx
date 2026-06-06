@@ -171,7 +171,7 @@ export const ProductDetail: React.FC = () => {
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(imgUrl)}
-                  className={`relative w-24 h-24 rounded-xl overflow-hidden border-2 bg-neutral-900 transition-all cursor-pointer ${
+                  className={`relative w-16 sm:w-24 h-16 sm:h-24 rounded-xl overflow-hidden border-2 bg-neutral-900 transition-all cursor-pointer ${
                     selectedImage === imgUrl ? 'border-brand-orange scale-95' : 'border-brand-border hover:border-brand-gray'
                   }`}
                 >
