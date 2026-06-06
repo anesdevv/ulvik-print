@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../lib/api';
 import type { Order } from '../../lib/api';
-import { ShoppingBag, AlertTriangle, ListOrdered, ClipboardList, Loader2, ArrowRight, TrendingUp, Volume2, VolumeX } from 'lucide-react';
+import { ShoppingBag, AlertTriangle, ListOrdered, ClipboardList, Loader2, ArrowRight, TrendingUp, Volume2, VolumeX, Bell, BellOff } from 'lucide-react';
 
 let globalAudioCtx: AudioContext | null = null;
 
@@ -46,6 +46,26 @@ const playNotificationSound = () => {
   }
 };
 
+const showBrowserNotification = (order: Order) => {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted') {
+    try {
+      const title = `Nouvelle Commande / New Order`;
+      const body = `${order.customer_name} a commandé ${order.product_name} (${order.size} / ${order.color}) pour ${order.total_price.toLocaleString()} DZD`;
+      const notification = new Notification(title, {
+        body,
+        icon: '/favicon.ico',
+        tag: order.id,
+      });
+      notification.onclick = () => {
+        window.focus();
+      };
+    } catch (err) {
+      console.error('Failed to show browser notification', err);
+    }
+  }
+};
+
 export const Dashboard: React.FC = () => {
   const { t } = useTranslation();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
@@ -64,8 +84,20 @@ export const Dashboard: React.FC = () => {
 
   // Sound and Autorefresh Polling State/Refs
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [notificationPermission, setNotificationPermission] = useState<string>(
+    'Notification' in window ? Notification.permission : 'unsupported'
+  );
   const knownOrderIdsRef = useRef<Set<string>>(new Set());
   const isInitializedRef = useRef(false);
+
+  // Request notification permission on mount
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().then((permission) => {
+        setNotificationPermission(permission);
+      });
+    }
+  }, []);
 
   // Authenticate Admin
   useEffect(() => {
@@ -136,9 +168,12 @@ export const Dashboard: React.FC = () => {
           if (!knownOrderIdsRef.current.has(latestOrder.id)) {
             knownOrderIdsRef.current.add(latestOrder.id);
             
-            // Play sound! (Only if this is not the very first load of the page)
-            if (isInitializedRef.current && soundEnabled) {
-              playNotificationSound();
+            // Play sound & notification! (Only if this is not the very first load of the page)
+            if (isInitializedRef.current) {
+              if (soundEnabled) {
+                playNotificationSound();
+              }
+              showBrowserNotification(latestOrder);
             }
           }
         }
@@ -237,6 +272,37 @@ export const Dashboard: React.FC = () => {
         
         {/* Navigation Quick Links and Sound Toggle */}
         <div className="flex flex-wrap items-center gap-3">
+          {/* Browser Notifications Toggle */}
+          {notificationPermission === 'default' && (
+            <button
+              onClick={async () => {
+                if ('Notification' in window) {
+                  const permission = await Notification.requestPermission();
+                  setNotificationPermission(permission);
+                }
+              }}
+              className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-brand-orange/15 border border-brand-orange/30 text-brand-orange text-xs font-semibold hover:bg-brand-orange/25 transition-all cursor-pointer animate-pulse"
+              title="Activer les notifications navigateur"
+            >
+              <Bell className="w-3.5 h-3.5" />
+              <span>Activer Notifications</span>
+            </button>
+          )}
+
+          {notificationPermission === 'granted' && (
+            <div className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-green-500/20 bg-green-500/5 text-green-400 text-xs font-medium">
+              <Bell className="w-3.5 h-3.5" />
+              <span>Notifications OK</span>
+            </div>
+          )}
+
+          {notificationPermission === 'denied' && (
+            <div className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-red-500/20 bg-red-500/5 text-red-400 text-xs font-medium" title="Notifications bloquées par votre navigateur">
+              <BellOff className="w-3.5 h-3.5" />
+              <span>Notifications bloquées</span>
+            </div>
+          )}
+
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
             className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
