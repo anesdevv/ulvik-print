@@ -22,6 +22,34 @@ export const ProductDetail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
 
+  // Countdown timer logic
+  const getRemainingTime = () => {
+    const now = new Date();
+    const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0); // next midnight
+    const diff = midnight.getTime() - now.getTime();
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    return {
+      hours: hours.toString().padStart(2, '0'),
+      minutes: minutes.toString().padStart(2, '0'),
+      seconds: seconds.toString().padStart(2, '0')
+    };
+  };
+
+  const [timeLeft, setTimeLeft] = useState(getRemainingTime());
+
+  useEffect(() => {
+    if (!product || !product.discount_price) return;
+    const timer = setInterval(() => {
+      setTimeLeft(getRemainingTime());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [product]);
+
   useEffect(() => {
     const fetchProduct = async () => {
       if (!id) return;
@@ -166,16 +194,36 @@ export const ProductDetail: React.FC = () => {
               {name}
             </h1>
             {product.discount_price ? (
-              <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-extrabold text-white">
-                  {product.discount_price.toLocaleString()} <span className="text-brand-orange text-base font-semibold">{t('home.currency')}</span>
-                </span>
-                <span className="text-base text-brand-gray line-through font-semibold">
-                  {product.price.toLocaleString()} {t('home.currency')}
-                </span>
-                <span className="bg-brand-orange/15 text-brand-orange font-extrabold text-xs px-2.5 py-1 rounded-lg border border-brand-orange/20 animate-pulse">
-                  -{Math.round(((product.price - product.discount_price) / product.price) * 100)}% OFF
-                </span>
+              <div>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-3xl font-extrabold text-white">
+                    {product.discount_price.toLocaleString()} <span className="text-brand-orange text-base font-semibold">{t('home.currency')}</span>
+                  </span>
+                  <span className="text-base text-brand-gray line-through font-semibold">
+                    {product.price.toLocaleString()} {t('home.currency')}
+                  </span>
+                  <span className="bg-brand-orange/15 text-brand-orange font-extrabold text-xs px-2.5 py-1 rounded-lg border border-brand-orange/20 animate-pulse">
+                    -{Math.round(((product.price - product.discount_price) / product.price) * 100)}% OFF
+                  </span>
+                </div>
+                
+                {/* Product Detail Timer */}
+                <div className="mt-4 p-3.5 glassmorphic rounded-xl border border-brand-border flex items-center justify-between max-w-sm animate-pulse-glow">
+                  <div className="flex items-center gap-2 text-[10px] font-bold text-brand-orange uppercase tracking-wider">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-orange opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-orange"></span>
+                    </span>
+                    Offre Vente Flash
+                  </div>
+                  <div className="flex gap-1.5 items-center text-xs font-mono text-white font-bold">
+                    <span className="px-2 py-0.5 bg-brand-dark/95 rounded border border-brand-border">{timeLeft.hours}</span>
+                    <span className="text-brand-orange text-[10px]">:</span>
+                    <span className="px-2 py-0.5 bg-brand-dark/95 rounded border border-brand-border">{timeLeft.minutes}</span>
+                    <span className="text-brand-orange text-[10px]">:</span>
+                    <span className="px-2 py-0.5 bg-brand-dark/95 rounded border border-brand-border text-brand-orange">{timeLeft.seconds}</span>
+                  </div>
+                </div>
               </div>
             ) : (
               <p className="text-2xl font-bold text-white">

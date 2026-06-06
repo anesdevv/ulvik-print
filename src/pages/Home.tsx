@@ -13,6 +13,33 @@ export const Home: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Countdown state for global Flash Sale (evergreen rolling 24-hour cycle)
+  const getRemainingTime = () => {
+    const now = new Date();
+    const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0); // next midnight
+    const diff = midnight.getTime() - now.getTime();
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    return {
+      hours: hours.toString().padStart(2, '0'),
+      minutes: minutes.toString().padStart(2, '0'),
+      seconds: seconds.toString().padStart(2, '0')
+    };
+  };
+
+  const [timeLeft, setTimeLeft] = useState(getRemainingTime());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(getRemainingTime());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -43,10 +70,10 @@ export const Home: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       
       {/* Hero Banner Section */}
-      <section className="relative overflow-hidden py-20 px-4 md:px-8 border-b border-brand-border">
+      <section className="relative overflow-hidden py-24 px-4 md:px-8 border-b border-brand-border bg-grid-pattern">
         {/* Decorative ambient blobs */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-brand-orange/10 blur-[80px] -z-10 pointer-events-none" />
-        <div className="absolute top-1/3 left-1/4 w-[250px] h-[250px] rounded-full bg-orange-600/5 blur-[60px] -z-10 pointer-events-none" />
+        <div className="absolute top-1/4 left-1/3 w-[350px] h-[350px] rounded-full bg-brand-orange/10 blur-[80px] -z-10 pointer-events-none animate-blob" />
+        <div className="absolute top-1/3 right-1/4 w-[250px] h-[250px] rounded-full bg-orange-600/5 blur-[60px] -z-10 pointer-events-none animate-blob-delayed" />
 
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center gap-4">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-orange/10 border border-brand-orange/30 text-brand-orange text-xs font-semibold uppercase tracking-wider mb-2">
@@ -61,6 +88,47 @@ export const Home: React.FC = () => {
           <p className="text-brand-gray text-base md:text-lg max-w-xl leading-relaxed mt-2">
             {t('home.subtitle')}
           </p>
+
+          {/* Live Countdown Timer Banner */}
+          <div className="mt-8 glassmorphic rounded-2xl border border-brand-border p-6 max-w-lg w-full flex flex-col items-center gap-4 relative overflow-hidden animate-pulse-glow">
+            {/* Ambient inner glow */}
+            <div className="absolute inset-0 bg-brand-orange/5 pointer-events-none" />
+            
+            <div className="flex items-center gap-2 text-xs font-heading font-bold text-brand-orange uppercase tracking-widest">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-orange opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-orange"></span>
+              </span>
+              Vente Flash Spéciale / Special Flash Sale
+            </div>
+            
+            <div className="flex gap-4 items-center mt-1">
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-14 rounded-xl bg-brand-dark/90 border border-brand-border flex items-center justify-center font-mono text-2xl font-bold text-white shadow-inner">
+                  {timeLeft.hours}
+                </div>
+                <span className="text-[10px] text-brand-gray font-semibold mt-1.5 uppercase tracking-wide">Heures</span>
+              </div>
+              <span className="text-xl font-bold text-brand-orange -mt-5 font-mono animate-bounce">:</span>
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-14 rounded-xl bg-brand-dark/90 border border-brand-border flex items-center justify-center font-mono text-2xl font-bold text-white shadow-inner">
+                  {timeLeft.minutes}
+                </div>
+                <span className="text-[10px] text-brand-gray font-semibold mt-1.5 uppercase tracking-wide">Minutes</span>
+              </div>
+              <span className="text-xl font-bold text-brand-orange -mt-5 font-mono animate-bounce">:</span>
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-14 rounded-xl bg-brand-dark/90 border border-brand-border flex items-center justify-center font-mono text-2xl font-bold text-brand-orange shadow-inner">
+                  {timeLeft.seconds}
+                </div>
+                <span className="text-[10px] text-brand-gray font-semibold mt-1.5 uppercase tracking-wide text-brand-orange/80">Secondes</span>
+              </div>
+            </div>
+            
+            <div className="text-[10px] text-brand-gray mt-1 font-sans italic">
+              * Réduction appliquée automatiquement au panier !
+            </div>
+          </div>
         </div>
       </section>
 

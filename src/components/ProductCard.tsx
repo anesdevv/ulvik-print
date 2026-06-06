@@ -15,6 +15,34 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const name = currentLang === 'en' ? product.name_en : product.name_fr;
   const imageUrl = product.images?.[0] || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600&auto=format&fit=crop';
 
+  // Countdown timer logic
+  const getRemainingTime = () => {
+    const now = new Date();
+    const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0); // next midnight
+    const diff = midnight.getTime() - now.getTime();
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    return {
+      hours: hours.toString().padStart(2, '0'),
+      minutes: minutes.toString().padStart(2, '0'),
+      seconds: seconds.toString().padStart(2, '0')
+    };
+  };
+
+  const [timeLeft, setTimeLeft] = React.useState(getRemainingTime());
+
+  React.useEffect(() => {
+    if (!product.discount_price) return;
+    const timer = setInterval(() => {
+      setTimeLeft(getRemainingTime());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [product.discount_price]);
+
   return (
     <div className="group relative bg-brand-card rounded-2xl border border-brand-border hover:border-brand-orange/40 transition-all duration-300 overflow-hidden flex flex-col glow-hover">
       
@@ -31,6 +59,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {product.in_stock && product.discount_price && (
           <div className="absolute top-3 left-3 bg-brand-orange text-white font-heading font-extrabold text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-lg border border-brand-orange/30 shadow-lg z-10 animate-pulse">
             -{Math.round(((product.price - product.discount_price) / product.price) * 100)}%
+          </div>
+        )}
+
+        {/* Timer Bar */}
+        {product.in_stock && product.discount_price && (
+          <div className="absolute bottom-3 left-3 right-3 bg-brand-dark/85 backdrop-blur-md border border-brand-border rounded-xl px-3 py-1.5 flex items-center justify-between text-[10px] font-sans text-brand-gray z-10">
+            <span className="flex items-center gap-1 text-brand-orange font-bold uppercase tracking-wider text-[8px]">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-orange opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-brand-orange"></span>
+              </span>
+              Vente Flash
+            </span>
+            <span className="font-mono text-white font-semibold">
+              {timeLeft.hours}h : {timeLeft.minutes}m : {timeLeft.seconds}s
+            </span>
           </div>
         )}
 
