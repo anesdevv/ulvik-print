@@ -5,65 +5,65 @@ import { requireAdmin, AuthenticatedRequest } from '../middleware/requireAdmin.j
 const router = Router();
 
 // In-memory mock delivery pricing fallback dataset
-let mockDeliveryPrices: Array<{ wilaya: string; fee: number }> = [
-  { wilaya: '01 - Adrar', fee: 1000 },
-  { wilaya: '02 - Chlef', fee: 700 },
-  { wilaya: '03 - Laghouat', fee: 800 },
-  { wilaya: '04 - Oum El Bouaghi', fee: 700 },
-  { wilaya: '05 - Batna', fee: 700 },
-  { wilaya: '06 - Béjaïa', fee: 700 },
-  { wilaya: '07 - Biskra', fee: 800 },
-  { wilaya: '08 - Béchar', fee: 900 },
-  { wilaya: '09 - Blida', fee: 500 },
-  { wilaya: '10 - Bouira', fee: 600 },
-  { wilaya: '11 - Tamanrasset', fee: 1200 },
-  { wilaya: '12 - Tébessa', fee: 800 },
-  { wilaya: '13 - Tlemcen', fee: 800 },
-  { wilaya: '14 - Tiaret', fee: 700 },
-  { wilaya: '15 - Tizi Ouzou', fee: 600 },
-  { wilaya: '16 - Alger', fee: 400 },
-  { wilaya: '17 - Djelfa', fee: 700 },
-  { wilaya: '18 - Jijel', fee: 700 },
-  { wilaya: '19 - Sétif', fee: 700 },
-  { wilaya: '20 - Saïda', fee: 800 },
-  { wilaya: '21 - Skikda', fee: 700 },
-  { wilaya: '22 - Sidi Bel Abbès', fee: 800 },
-  { wilaya: '23 - Annaba', fee: 700 },
-  { wilaya: '24 - Guelma', fee: 700 },
-  { wilaya: '25 - Constantine', fee: 700 },
-  { wilaya: '26 - Médéa', fee: 600 },
-  { wilaya: '27 - Mostaganem', fee: 700 },
-  { wilaya: '28 - M\'Sila', fee: 700 },
-  { wilaya: '29 - Mascara', fee: 800 },
-  { wilaya: '30 - Ouargla', fee: 900 },
-  { wilaya: '31 - Oran', fee: 700 },
-  { wilaya: '32 - El Bayadh', fee: 900 },
-  { wilaya: '33 - Illizi', fee: 1200 },
-  { wilaya: '34 - Bordj Bou Arréridj', fee: 700 },
-  { wilaya: '35 - Boumerdès', fee: 500 },
-  { wilaya: '36 - El Tarf', fee: 800 },
-  { wilaya: '37 - Tindouf', fee: 1200 },
-  { wilaya: '38 - Tissemsilt', fee: 700 },
-  { wilaya: '39 - El Oued', fee: 800 },
-  { wilaya: '40 - Khenchela', fee: 800 },
-  { wilaya: '41 - Souk Ahras', fee: 800 },
-  { wilaya: '42 - Tipaza', fee: 500 },
-  { wilaya: '43 - Mila', fee: 700 },
-  { wilaya: '44 - Aïn Defla', fee: 700 },
-  { wilaya: '45 - Naâma', fee: 900 },
-  { wilaya: '46 - Aïn Témouchent', fee: 800 },
-  { wilaya: '47 - Ghardaïa', fee: 800 },
-  { wilaya: '48 - Relizane', fee: 700 },
-  { wilaya: '49 - Timimoun', fee: 1000 },
-  { wilaya: '50 - Bordj Badji Mokhtar', fee: 1200 },
-  { wilaya: '51 - Ouled Djellal', fee: 800 },
-  { wilaya: '52 - Béni Abbès', fee: 1000 },
-  { wilaya: '53 - In Salah', fee: 1100 },
-  { wilaya: '54 - In Guezzam', fee: 1200 },
-  { wilaya: '55 - Touggourt', fee: 900 },
-  { wilaya: '56 - Djanet', fee: 1200 },
-  { wilaya: '57 - El M\'Ghair', fee: 950 },
-  { wilaya: '58 - El Meniaa', fee: 950 }
+let mockDeliveryPrices: Array<{ wilaya: string; home_fee: number; desk_fee: number }> = [
+  { wilaya: '01 - Adrar', home_fee: 1000, desk_fee: 700 },
+  { wilaya: '02 - Chlef', home_fee: 700, desk_fee: 400 },
+  { wilaya: '03 - Laghouat', home_fee: 800, desk_fee: 500 },
+  { wilaya: '04 - Oum El Bouaghi', home_fee: 700, desk_fee: 400 },
+  { wilaya: '05 - Batna', home_fee: 700, desk_fee: 400 },
+  { wilaya: '06 - Béjaïa', home_fee: 700, desk_fee: 400 },
+  { wilaya: '07 - Biskra', home_fee: 800, desk_fee: 500 },
+  { wilaya: '08 - Béchar', home_fee: 900, desk_fee: 600 },
+  { wilaya: '09 - Blida', home_fee: 500, desk_fee: 200 },
+  { wilaya: '10 - Bouira', home_fee: 600, desk_fee: 300 },
+  { wilaya: '11 - Tamanrasset', home_fee: 1200, desk_fee: 900 },
+  { wilaya: '12 - Tébessa', home_fee: 800, desk_fee: 500 },
+  { wilaya: '13 - Tlemcen', home_fee: 800, desk_fee: 500 },
+  { wilaya: '14 - Tiaret', home_fee: 700, desk_fee: 400 },
+  { wilaya: '15 - Tizi Ouzou', home_fee: 600, desk_fee: 300 },
+  { wilaya: '16 - Alger', home_fee: 400, desk_fee: 100 },
+  { wilaya: '17 - Djelfa', home_fee: 700, desk_fee: 400 },
+  { wilaya: '18 - Jijel', home_fee: 700, desk_fee: 400 },
+  { wilaya: '19 - Sétif', home_fee: 700, desk_fee: 400 },
+  { wilaya: '20 - Saïda', home_fee: 800, desk_fee: 500 },
+  { wilaya: '21 - Skikda', home_fee: 700, desk_fee: 400 },
+  { wilaya: '22 - Sidi Bel Abbès', home_fee: 800, desk_fee: 500 },
+  { wilaya: '23 - Annaba', home_fee: 700, desk_fee: 400 },
+  { wilaya: '24 - Guelma', home_fee: 700, desk_fee: 400 },
+  { wilaya: '25 - Constantine', home_fee: 700, desk_fee: 400 },
+  { wilaya: '26 - Médéa', home_fee: 600, desk_fee: 300 },
+  { wilaya: '27 - Mostaganem', home_fee: 700, desk_fee: 400 },
+  { wilaya: '28 - M\'Sila', home_fee: 700, desk_fee: 400 },
+  { wilaya: '29 - Mascara', home_fee: 800, desk_fee: 500 },
+  { wilaya: '30 - Ouargla', home_fee: 900, desk_fee: 600 },
+  { wilaya: '31 - Oran', home_fee: 700, desk_fee: 400 },
+  { wilaya: '32 - El Bayadh', home_fee: 900, desk_fee: 600 },
+  { wilaya: '33 - Illizi', home_fee: 1200, desk_fee: 900 },
+  { wilaya: '34 - Bordj Bou Arréridj', home_fee: 700, desk_fee: 400 },
+  { wilaya: '35 - Boumerdès', home_fee: 500, desk_fee: 200 },
+  { wilaya: '36 - El Tarf', home_fee: 800, desk_fee: 500 },
+  { wilaya: '37 - Tindouf', home_fee: 1200, desk_fee: 900 },
+  { wilaya: '38 - Tissemsilt', home_fee: 700, desk_fee: 400 },
+  { wilaya: '39 - El Oued', home_fee: 800, desk_fee: 500 },
+  { wilaya: '40 - Khenchela', home_fee: 800, desk_fee: 500 },
+  { wilaya: '41 - Souk Ahras', home_fee: 800, desk_fee: 500 },
+  { wilaya: '42 - Tipaza', home_fee: 500, desk_fee: 200 },
+  { wilaya: '43 - Mila', home_fee: 700, desk_fee: 400 },
+  { wilaya: '44 - Aïn Defla', home_fee: 700, desk_fee: 400 },
+  { wilaya: '45 - Naâma', home_fee: 900, desk_fee: 600 },
+  { wilaya: '46 - Aïn Témouchent', home_fee: 800, desk_fee: 500 },
+  { wilaya: '47 - Ghardaïa', home_fee: 800, desk_fee: 500 },
+  { wilaya: '48 - Relizane', home_fee: 700, desk_fee: 400 },
+  { wilaya: '49 - Timimoun', home_fee: 1000, desk_fee: 700 },
+  { wilaya: '50 - Bordj Badji Mokhtar', home_fee: 1200, desk_fee: 900 },
+  { wilaya: '51 - Ouled Djellal', home_fee: 800, desk_fee: 500 },
+  { wilaya: '52 - Béni Abbès', home_fee: 1000, desk_fee: 700 },
+  { wilaya: '53 - In Salah', home_fee: 1100, desk_fee: 800 },
+  { wilaya: '54 - In Guezzam', home_fee: 1200, desk_fee: 900 },
+  { wilaya: '55 - Touggourt', home_fee: 900, desk_fee: 600 },
+  { wilaya: '56 - Djanet', home_fee: 1200, desk_fee: 900 },
+  { wilaya: '57 - El M\'Ghair', home_fee: 950, desk_fee: 650 },
+  { wilaya: '58 - El Meniaa', home_fee: 950, desk_fee: 650 }
 ];
 
 // GET /api/delivery - Public (Fetch all wilaya fees)
@@ -91,20 +91,20 @@ router.get('/', async (req: AuthenticatedRequest, res: Response): Promise<void> 
 });
 
 // PUT /api/delivery - Admin only (Bulk upsert wilaya fees)
-// Body should be an array of { wilaya: string, fee: number }
+// Body should be an array of { wilaya: string, home_fee: number, desk_fee: number }
 router.put('/', requireAdmin, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const prices = req.body;
 
     if (!Array.isArray(prices)) {
-      res.status(400).json({ error: 'Body must be an array of { wilaya, fee }' });
+      res.status(400).json({ error: 'Body must be an array of { wilaya, home_fee, desk_fee }' });
       return;
     }
 
-    // Validate that each item has a wilaya and fee
+    // Validate that each item has a wilaya, home_fee, and desk_fee
     for (const item of prices) {
-      if (!item.wilaya || item.fee === undefined) {
-        res.status(400).json({ error: 'Each pricing item must contain a wilaya name and a fee' });
+      if (!item.wilaya || item.home_fee === undefined || item.desk_fee === undefined) {
+        res.status(400).json({ error: 'Each pricing item must contain a wilaya name, home_fee, and desk_fee' });
         return;
       }
     }
@@ -114,9 +114,14 @@ router.put('/', requireAdmin, async (req: AuthenticatedRequest, res: Response): 
       for (const item of prices) {
         const idx = mockDeliveryPrices.findIndex(p => p.wilaya === item.wilaya);
         if (idx !== -1) {
-          mockDeliveryPrices[idx].fee = Number(item.fee);
+          mockDeliveryPrices[idx].home_fee = Number(item.home_fee);
+          mockDeliveryPrices[idx].desk_fee = Number(item.desk_fee);
         } else {
-          mockDeliveryPrices.push({ wilaya: item.wilaya, fee: Number(item.fee) });
+          mockDeliveryPrices.push({
+            wilaya: item.wilaya,
+            home_fee: Number(item.home_fee),
+            desk_fee: Number(item.desk_fee)
+          });
         }
       }
       // Sort

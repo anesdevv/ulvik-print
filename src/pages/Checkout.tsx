@@ -61,13 +61,12 @@ export const Checkout: React.FC = () => {
       return;
     }
 
-    if (deliveryType === 'desk') {
-      setDeliveryFee(0);
-      return;
-    }
-
     const priceObj = deliveryPrices.find((p) => p.wilaya === selectedWilaya);
-    setDeliveryFee(priceObj ? priceObj.fee : 0);
+    if (priceObj) {
+      setDeliveryFee(deliveryType === 'desk' ? priceObj.desk_fee : priceObj.home_fee);
+    } else {
+      setDeliveryFee(0);
+    }
   }, [selectedWilaya, deliveryType, deliveryPrices]);
 
   if (!state || !state.product) {
@@ -79,6 +78,10 @@ export const Checkout: React.FC = () => {
   const productName = currentLang === 'en' ? product.name_en : product.name_fr;
   const productPrice = product.discount_price ? product.discount_price : product.price;
   const totalPrice = productPrice + deliveryFee;
+
+  const selectedPriceObj = deliveryPrices.find((p) => p.wilaya === selectedWilaya);
+  const homeFeeText = selectedPriceObj ? ` (${selectedPriceObj.home_fee} DZD)` : '';
+  const deskFeeText = selectedPriceObj ? ` (${selectedPriceObj.desk_fee} DZD)` : '';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -264,7 +267,7 @@ export const Checkout: React.FC = () => {
                   </div>
                   <div className="flex flex-col">
                     <span className="font-semibold text-sm text-white">{t('checkout.delivery_home')}</span>
-                    <span className="text-[11px] text-brand-gray">Livraison à votre adresse</span>
+                    <span className="text-[11px] text-brand-gray">Livraison à votre adresse{homeFeeText}</span>
                   </div>
                 </button>
 
@@ -285,7 +288,7 @@ export const Checkout: React.FC = () => {
                   </div>
                   <div className="flex flex-col">
                     <span className="font-semibold text-sm text-white">{t('checkout.delivery_desk')}</span>
-                    <span className="text-[11px] text-brand-gray">Récupérer dans le bureau de transport (0 DZD)</span>
+                    <span className="text-[11px] text-brand-gray">Récupérer dans le bureau de transport{deskFeeText}</span>
                   </div>
                 </button>
               </div>

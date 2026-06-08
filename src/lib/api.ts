@@ -71,7 +71,8 @@ export interface Order {
 
 export interface DeliveryPrice {
   wilaya: string;
-  fee: number;
+  home_fee: number;
+  desk_fee: number;
 }
 
 export const api = {

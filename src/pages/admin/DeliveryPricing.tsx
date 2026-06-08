@@ -13,6 +13,7 @@ export const DeliveryPricing: React.FC = () => {
 
   const [prices, setPrices] = useState<DeliveryPrice[]>([]);
   const [bulkAmount, setBulkAmount] = useState('');
+  const [bulkTarget, setBulkTarget] = useState<'home' | 'desk' | 'both'>('both');
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -46,10 +47,10 @@ export const DeliveryPricing: React.FC = () => {
   }, [isAuthenticated]);
 
   // Handle individual fee change in the table
-  const handleFeeChange = (wilayaName: string, newFee: number) => {
+  const handleFeeChange = (wilayaName: string, field: 'home_fee' | 'desk_fee', newFee: number) => {
     setSuccess(false);
     setPrices((prev) =>
-      prev.map((item) => (item.wilaya === wilayaName ? { ...item, fee: newFee } : item))
+      prev.map((item) => (item.wilaya === wilayaName ? { ...item, [field]: newFee } : item))
     );
   };
 
@@ -64,7 +65,17 @@ export const DeliveryPricing: React.FC = () => {
     }
 
     const amount = Number(bulkAmount);
-    setPrices((prev) => prev.map((item) => ({ ...item, fee: amount })));
+    setPrices((prev) =>
+      prev.map((item) => {
+        if (bulkTarget === 'both') {
+          return { ...item, home_fee: amount, desk_fee: amount };
+        } else if (bulkTarget === 'home') {
+          return { ...item, home_fee: amount };
+        } else {
+          return { ...item, desk_fee: amount };
+        }
+      })
+    );
     setBulkAmount('');
   };
 
@@ -125,7 +136,7 @@ export const DeliveryPricing: React.FC = () => {
       </div>
 
       {/* Bulk Apply Bar */}
-      <div className="bg-brand-card border border-brand-border rounded-2xl p-5 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-brand-card border border-brand-border rounded-2xl p-5 mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-brand-orange" />
           <div className="flex flex-col">
@@ -134,20 +145,31 @@ export const DeliveryPricing: React.FC = () => {
           </div>
         </div>
 
-        <form onSubmit={handleBulkApply} className="flex gap-2 w-full sm:w-auto">
-          <input
-            type="number"
-            value={bulkAmount}
-            onChange={(e) => setBulkAmount(e.target.value)}
-            placeholder="Montant (ex: 800)"
-            className="flex-grow sm:flex-grow-0 w-36 bg-brand-dark border border-brand-border focus:border-brand-orange rounded-xl px-3 py-2 text-white outline-none text-xs"
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-neutral-900 border border-brand-border hover:border-brand-orange text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+        <form onSubmit={handleBulkApply} className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+          <select
+            value={bulkTarget}
+            onChange={(e) => setBulkTarget(e.target.value as 'home' | 'desk' | 'both')}
+            className="bg-brand-dark border border-brand-border focus:border-brand-orange rounded-xl px-3 py-2 text-white outline-none text-xs cursor-pointer"
           >
-            {t('admin.apply')}
-          </button>
+            <option value="both">À domicile & Bureau</option>
+            <option value="home">À domicile uniquement</option>
+            <option value="desk">Bureau uniquement</option>
+          </select>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <input
+              type="number"
+              value={bulkAmount}
+              onChange={(e) => setBulkAmount(e.target.value)}
+              placeholder="Montant (ex: 800)"
+              className="flex-grow sm:flex-grow-0 w-36 bg-brand-dark border border-brand-border focus:border-brand-orange rounded-xl px-3 py-2 text-white outline-none text-xs"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 bg-neutral-900 border border-brand-border hover:border-brand-orange text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+            >
+              {t('admin.apply')}
+            </button>
+          </div>
         </form>
       </div>
 
@@ -178,7 +200,8 @@ export const DeliveryPricing: React.FC = () => {
               <thead>
                 <tr className="sticky top-0 bg-neutral-950 border-b border-brand-border text-brand-gray font-semibold text-xs uppercase z-10">
                   <th className="py-4 px-4 sm:px-6">Wilaya</th>
-                  <th className="py-4 px-4 sm:px-6 text-right">Frais d'expédition (DZD)</th>
+                  <th className="py-4 px-4 sm:px-6 text-right">Frais à domicile (DZD)</th>
+                  <th className="py-4 px-4 sm:px-6 text-right">Frais Bureau / Pickup (DZD)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-brand-border">
@@ -192,8 +215,23 @@ export const DeliveryPricing: React.FC = () => {
                         <div className="relative">
                           <input
                             type="number"
-                            value={item.fee}
-                            onChange={(e) => handleFeeChange(item.wilaya, Number(e.target.value))}
+                            value={item.home_fee}
+                            onChange={(e) => handleFeeChange(item.wilaya, 'home_fee', Number(e.target.value))}
+                            className="w-28 bg-brand-dark border border-brand-border focus:border-brand-orange rounded-lg pl-8 pr-3 py-1.5 text-right font-bold text-white text-xs outline-none transition-all"
+                            min="0"
+                          />
+                          <DollarSign className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-brand-orange" />
+                        </div>
+                        <span className="text-xs text-brand-gray">DZD</span>
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-4 sm:px-6 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <div className="relative">
+                          <input
+                            type="number"
+                            value={item.desk_fee}
+                            onChange={(e) => handleFeeChange(item.wilaya, 'desk_fee', Number(e.target.value))}
                             className="w-28 bg-brand-dark border border-brand-border focus:border-brand-orange rounded-lg pl-8 pr-3 py-1.5 text-right font-bold text-white text-xs outline-none transition-all"
                             min="0"
                           />
