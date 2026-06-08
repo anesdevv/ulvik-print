@@ -73,19 +73,107 @@ router.post('/', async (req: AuthenticatedRequest, res: Response): Promise<void>
       total_price
     } = req.body;
 
-    // Validate request body
+    // 1. Validate request body types
     if (
-      !product_name ||
-      !size ||
-      !color ||
-      !customer_name ||
-      !phone ||
-      !wilaya ||
-      !baladiya ||
-      !delivery_type ||
-      total_price === undefined
+      typeof product_name !== 'string' ||
+      typeof size !== 'string' ||
+      typeof color !== 'string' ||
+      typeof customer_name !== 'string' ||
+      typeof phone !== 'string' ||
+      typeof wilaya !== 'string' ||
+      typeof baladiya !== 'string' ||
+      typeof delivery_type !== 'string' ||
+      typeof total_price !== 'number' ||
+      (product_id !== undefined && product_id !== null && typeof product_id !== 'string') ||
+      (delivery_fee !== undefined && delivery_fee !== null && typeof delivery_fee !== 'number')
     ) {
-      res.status(400).json({ error: 'Missing required order fields' });
+      res.status(400).json({ error: 'Invalid field types in request body' });
+      return;
+    }
+
+    // 2. Trim and sanitize inputs
+    const trimmedProductId = product_id ? product_id.trim() : null;
+    const trimmedProductName = product_name.trim();
+    const trimmedSize = size.trim();
+    const trimmedColor = color.trim();
+    const trimmedCustomerName = customer_name.trim();
+    const trimmedPhone = phone.trim();
+    const trimmedWilaya = wilaya.trim();
+    const trimmedBaladiya = baladiya.trim();
+    const trimmedDeliveryType = delivery_type.trim();
+
+    // 3. Verify presence after trim
+    if (
+      !trimmedProductName ||
+      !trimmedSize ||
+      !trimmedColor ||
+      !trimmedCustomerName ||
+      !trimmedPhone ||
+      !trimmedWilaya ||
+      !trimmedBaladiya ||
+      !trimmedDeliveryType
+    ) {
+      res.status(400).json({ error: 'Order fields cannot be empty or whitespace only' });
+      return;
+    }
+
+    // 4. Length validation
+    if (trimmedProductId && trimmedProductId.length > 100) {
+      res.status(400).json({ error: 'Product ID must not exceed 100 characters' });
+      return;
+    }
+    if (trimmedProductName.length > 150) {
+      res.status(400).json({ error: 'Product name must not exceed 150 characters' });
+      return;
+    }
+    if (trimmedSize.length > 20) {
+      res.status(400).json({ error: 'Size must not exceed 20 characters' });
+      return;
+    }
+    if (trimmedColor.length > 100) {
+      res.status(400).json({ error: 'Color must not exceed 100 characters' });
+      return;
+    }
+    if (trimmedCustomerName.length > 100) {
+      res.status(400).json({ error: 'Customer name must not exceed 100 characters' });
+      return;
+    }
+    if (trimmedPhone.length > 30) {
+      res.status(400).json({ error: 'Phone number must not exceed 30 characters' });
+      return;
+    }
+    if (trimmedWilaya.length > 100) {
+      res.status(400).json({ error: 'Wilaya must not exceed 100 characters' });
+      return;
+    }
+    if (trimmedBaladiya.length > 100) {
+      res.status(400).json({ error: 'Baladiya must not exceed 100 characters' });
+      return;
+    }
+
+    // 5. Phone number format validation (digits, spaces, plus, dashes, parentheses)
+    const phoneRegex = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/;
+    if (!phoneRegex.test(trimmedPhone)) {
+      res.status(400).json({ error: 'Invalid phone number format' });
+      return;
+    }
+
+    // 6. Delivery type check
+    if (trimmedDeliveryType !== 'home' && trimmedDeliveryType !== 'desk') {
+      res.status(400).json({ error: 'Delivery type must be either "home" or "desk"' });
+      return;
+    }
+
+    // 7. Numeric range check
+    const parsedFee = Number(delivery_fee) || 0;
+    const parsedTotal = Number(total_price);
+
+    if (parsedFee < 0 || parsedFee > 50000 || isNaN(parsedFee)) {
+      res.status(400).json({ error: 'Invalid delivery fee range' });
+      return;
+    }
+    if (parsedTotal <= 0 || parsedTotal > 1000000 || isNaN(parsedTotal)) {
+      res.status(400).json({ error: 'Invalid total price range' });
       return;
     }
 
@@ -93,17 +181,17 @@ router.post('/', async (req: AuthenticatedRequest, res: Response): Promise<void>
       const newOrder = {
         id: `dev-ord-${Date.now().toString().slice(-4)}`,
         created_at: new Date().toISOString(),
-        product_id: product_id || null,
-        product_name,
-        size,
-        color,
-        customer_name,
-        phone,
-        wilaya,
-        baladiya,
-        delivery_type,
-        delivery_fee: Number(delivery_fee) || 0,
-        total_price: Number(total_price),
+        product_id: trimmedProductId,
+        product_name: trimmedProductName,
+        size: trimmedSize,
+        color: trimmedColor,
+        customer_name: trimmedCustomerName,
+        phone: trimmedPhone,
+        wilaya: trimmedWilaya,
+        baladiya: trimmedBaladiya,
+        delivery_type: trimmedDeliveryType,
+        delivery_fee: parsedFee,
+        total_price: parsedTotal,
         status: 'new'
       };
       mockOrders.unshift(newOrder);
@@ -115,17 +203,17 @@ router.post('/', async (req: AuthenticatedRequest, res: Response): Promise<void>
       .from('orders')
       .insert([
         {
-          product_id: product_id || null,
-          product_name,
-          size,
-          color,
-          customer_name,
-          phone,
-          wilaya,
-          baladiya,
-          delivery_type,
-          delivery_fee: Number(delivery_fee) || 0,
-          total_price: Number(total_price),
+          product_id: trimmedProductId,
+          product_name: trimmedProductName,
+          size: trimmedSize,
+          color: trimmedColor,
+          customer_name: trimmedCustomerName,
+          phone: trimmedPhone,
+          wilaya: trimmedWilaya,
+          baladiya: trimmedBaladiya,
+          delivery_type: trimmedDeliveryType,
+          delivery_fee: parsedFee,
+          total_price: parsedTotal,
           status: 'new' // default
         }
       ])

@@ -27,6 +27,20 @@ router.post(
         return;
       }
 
+      // Restrict file uploads strictly to image types
+      const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+      if (!allowedMimeTypes.includes(file.mimetype)) {
+        res.status(400).json({ error: 'Only image files (JPEG, PNG, WEBP, GIF) are allowed' });
+        return;
+      }
+
+      const fileExt = file.originalname.split('.').pop()?.toLowerCase();
+      const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+      if (!fileExt || !allowedExtensions.includes(fileExt)) {
+        res.status(400).json({ error: 'Invalid file extension. Only JPG, JPEG, PNG, WEBP, and GIF are allowed.' });
+        return;
+      }
+
       if (isPlaceholder) {
         // Return a mock placeholder image from Unsplash
         const mockUrls = [
@@ -43,7 +57,6 @@ router.post(
       }
 
       // Generate a unique filename
-      const fileExt = file.originalname.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
       const filePath = `products/${fileName}`;
 

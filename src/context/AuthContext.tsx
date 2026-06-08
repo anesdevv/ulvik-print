@@ -34,7 +34,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // Local dev bypass for testing when Supabase keys are placeholders
       const isPlaceholder = !import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL.includes('placeholder.supabase.co');
-      if (isPlaceholder || (email === 'admin@ulvicprint.com' && password === 'admin')) {
+      const isDev = import.meta.env.DEV;
+      if (isPlaceholder || (isDev && email === 'admin@ulvicprint.com' && password === 'admin')) {
         console.warn('Using local dev admin bypass login');
         const dummyUser = { email: 'admin@ulvicprint.com', id: 'dev-admin-id' };
         const dummyToken = 'dev-admin-token';

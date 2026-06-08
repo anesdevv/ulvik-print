@@ -19,8 +19,8 @@ export async function requireAdmin(
 
     const token = authHeader.split(' ')[1];
 
-    // Local dev bypass
-    if (token === 'dev-admin-token' || isPlaceholder) {
+    // Local dev bypass - strictly disabled in production environments
+    if (process.env.NODE_ENV !== 'production' && (token === 'dev-admin-token' || isPlaceholder)) {
       req.user = { email: 'admin@ulvicprint.com', id: 'dev-admin-id' };
       next();
       return;
@@ -30,6 +30,18 @@ export async function requireAdmin(
 
     if (error || !user) {
       res.status(401).json({ error: 'Invalid or expired authorization token' });
+      return;
+    }
+
+    // Strict admin email validation to prevent general logged-in user access
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@ulvicprint.com';
+    if (user.email !== adminEmail) {
+      res.status(403).json({ error: 'Access denied: Admin privileges required' });
+      return;
+    }
+
+    if (!user.email_confirmed_at) {
+      res.status(403).json({ error: 'Access denied: Email address not confirmed' });
       return;
     }
 

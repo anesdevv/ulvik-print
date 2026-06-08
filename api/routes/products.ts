@@ -46,11 +46,12 @@ router.get('/', async (req: AuthenticatedRequest, res: Response): Promise<void> 
     
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
-      if (token === 'dev-admin-token' || isPlaceholder) {
+      if (process.env.NODE_ENV !== 'production' && (token === 'dev-admin-token' || isPlaceholder)) {
         isAdmin = true;
       } else {
         const { data: { user } } = await supabase.auth.getUser(token);
-        if (user) {
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@ulvicprint.com';
+        if (user && user.email === adminEmail && user.email_confirmed_at) {
           isAdmin = true;
         }
       }
