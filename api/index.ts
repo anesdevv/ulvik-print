@@ -42,6 +42,13 @@ app.use((err: any, req: Request, res: Response, next: any) => {
   res.status(500).json({ error: err.message || 'Something went wrong on the server' });
 });
 
+// Export config for Vercel to disable body parsing, allowing Multer to parse multipart/form-data
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 // Export for Vercel Serverless Function
 export default app;
 
