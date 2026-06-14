@@ -1,26 +1,317 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Warm Monochrome Canvas (Light Mode) */
+  --bg-canvas: #FBFBFA;
+  --bg-surface: #FFFFFF;
+  --bg-surface-hover: #F7F6F3;
+  
+  --text-primary: #111111;
+  --text-secondary: #585856;
+  --text-muted: #8E8E8A;
+  
+  /* Crisp Borders */
+  --border-color: #EAEAEA;
+  --border-active: #111111;
+  
+  /* Spot Muted Pastels (Semantic) */
+  --pastel-red-bg: #FDEBEC;
+  --pastel-red-text: #9F2F2D;
+  --pastel-blue-bg: #E1F3FE;
+  --pastel-blue-text: #1F6C9F;
+  --pastel-green-bg: #EDF3EC;
+  --pastel-green-text: #346538;
+  --pastel-yellow-bg: #FBF3DB;
+  --pastel-yellow-text: #956400;
+  --pastel-purple-bg: #F5E9FC;
+  --pastel-purple-text: #6A3485;
+
+  /* Fonts */
+  --font-serif: 'Newsreader', Georgia, Cambria, 'Times New Roman', serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  
+  --transition-smooth: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-bounce: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme="dark"] {
+  /* Premium Minimalist Dark Mode Canvas */
+  --bg-canvas: #090B0F;
+  --bg-surface: #121620;
+  --bg-surface-hover: #1A1F2B;
+  
+  --text-primary: #F3F4F6;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+  
+  --border-color: #242B37;
+  --border-active: #F3F4F6;
+
+  /* Adjust Spot Pastels slightly for dark contrast */
+  --pastel-red-bg: rgba(239, 68, 68, 0.15);
+  --pastel-red-text: #F87171;
+  --pastel-blue-bg: rgba(59, 130, 246, 0.15);
+  --pastel-blue-text: #60A5FA;
+  --pastel-green-bg: rgba(16, 185, 129, 0.15);
+  --pastel-green-text: #34D399;
+  --pastel-yellow-bg: rgba(245, 158, 11, 0.15);
+  --pastel-yellow-text: #FBBF24;
+  --pastel-purple-bg: rgba(139, 92, 246, 0.15);
+  --pastel-purple-text: #C084FC;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  border: none;
+  outline: none;
+  font-family: var(--font-sans);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+html, body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-muted) var(--bg-canvas);
+  scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: #E5E5E0;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Premium Minimalist Bento Panels */
+.bento-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 2rem;
+  transition: var(--transition-smooth);
+}
+
+.bento-panel:hover {
+  border-color: #D3D3CB;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+/* Editorial Typography */
+.editorial-title {
+  font-family: var(--font-serif);
+  font-size: 2.75rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.editorial-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.mono-display {
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em;
+}
+
+/* Buttons (Premium Utilitarian Solid black) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.15rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.btn-primary {
+  background: var(--text-primary);
+  color: var(--bg-surface);
+}
+
+.btn-primary:hover {
+  background: #333333;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-surface-hover);
+  border-color: #D3D3CB;
+}
+
+.btn-danger-link {
+  background: transparent;
+  color: var(--pastel-red-text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: var(--transition-smooth);
+}
+
+.btn-danger-link:hover {
+  background: var(--pastel-red-bg);
+}
+
+/* Form inputs (Restrained & Sharp) */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.form-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.form-input, .form-select {
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary);
+  padding: 0.65rem 0.85rem;
+  font-size: 0.9rem;
+  width: 100%;
+  transition: var(--transition-smooth);
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--border-active);
+  background: var(--bg-surface);
+}
+
+.form-select option {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+/* Spot Muted Pastel Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.badge-red {
+  background: var(--pastel-red-bg);
+  color: var(--pastel-red-text);
+}
+
+.badge-blue {
+  background: var(--pastel-blue-bg);
+  color: var(--pastel-blue-text);
+}
+
+.badge-green {
+  background: var(--pastel-green-bg);
+  color: var(--pastel-green-text);
+}
+
+.badge-yellow {
+  background: var(--pastel-yellow-bg);
+  color: var(--pastel-yellow-text);
+}
+
+.badge-purple {
+  background: var(--pastel-purple-bg);
+  color: var(--pastel-purple-text);
+}
+
+/* Table styling (Editorial Document format) */
+.editorial-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.editorial-table th {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  padding: 1rem 0.75rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.editorial-table td {
+  padding: 1rem 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.editorial-table tr:hover td {
+  color: var(--text-primary);
+  background: var(--bg-surface-hover);
+}
+
+/* Keystroke UI element */
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--bg-surface-hover);
+  padding: 0.1rem 0.35rem;
+  color: var(--text-secondary);
+}
+
+/* Dashboard spacing defaults */
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  width: 100%;
 }

@@ -1,0 +1,154 @@
+.notepadContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  height: 100%;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 500;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+  color: var(--text-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.noteInputArea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.85rem;
+}
+
+.noteTitleInput {
+  background: transparent;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding-bottom: 0.25rem;
+  width: 100%;
+}
+
+.noteContentInput {
+  background: transparent;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  width: 100%;
+  resize: none;
+  min-height: 50px;
+  line-height: 1.4;
+}
+
+.noteActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.notesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.noteCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: var(--transition-smooth);
+}
+
+.noteCard:hover {
+  border-color: #D3D3CB;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.noteCardPinned {
+  background: var(--pastel-purple-bg);
+  border-color: rgba(106, 52, 133, 0.15);
+}
+
+.noteCardPinned .noteCardTitle {
+  color: var(--pastel-purple-text);
+}
+
+.noteCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.noteCardTitle {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.noteCardDate {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.noteCardBody {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.noteIconButtons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.iconBtn {
+  background: transparent;
+  color: var(--text-muted);
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.iconBtn:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+.iconBtnActive {
+  color: var(--pastel-purple-text) !important;
+}
+
+.iconBtnDanger:hover {
+  background: var(--pastel-red-bg);
+  color: var(--pastel-red-text);
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: 1.5rem 0;
+}

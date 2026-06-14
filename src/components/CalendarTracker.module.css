@@ -1,0 +1,128 @@
+.calendarCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+}
+
+.monthTitle {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.navControls {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.navBtn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.navBtn:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-active);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background-color: var(--border-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.weekdayHeader {
+  background-color: var(--bg-surface-hover);
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dayCell {
+  background-color: var(--bg-surface);
+  aspect-ratio: 1.2;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  position: relative;
+  min-height: 65px;
+}
+
+.dayCell:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+.dayCellActive {
+  background-color: var(--bg-surface-hover);
+  box-shadow: inset 0 0 0 1.5px var(--border-active);
+  z-index: 2;
+}
+
+.dayCellEmpty {
+  background-color: var(--bg-canvas);
+  cursor: default;
+  pointer-events: none;
+}
+
+.dayNumber {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.dayCellActive .dayNumber {
+  color: var(--text-primary);
+}
+
+.indicators {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.ordersBadge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+  padding: 0 0.25rem;
+  background: var(--bg-surface);
+}
+
+.profitBadge {
+  font-family: var(--font-mono) !important;
+  font-size: 0.6rem !important;
+  padding: 0.1rem 0.35rem !important;
+  line-height: 1 !important;
+}
