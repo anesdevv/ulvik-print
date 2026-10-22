@@ -1,6 +1,6 @@
-# 👕 Ulvic Print
+# Ulvic Print
 
-> **Wear Your Mind with Ulvic Print** — A premium custom apparel printing e-commerce platform and back-office management system tailored for the Algerian market.
+Custom apparel printing e-commerce platform and back-office management system tailored for the Algerian market.
 
 [![Vite](https://img.shields.io/badge/Vite-8.x-purple?style=for-the-badge&logo=vite)](https://vite.dev/)
 [![React](https://img.shields.io/badge/React-19.x-blue?style=for-the-badge&logo=react)](https://react.dev/)
@@ -11,33 +11,35 @@
 
 ---
 
-## 📖 Overview
+## Overview
 
-**Ulvic Print** is a full-stack web application designed for a custom merchandise and t-shirt printing business in Algeria. It offers a sleek, modern, bilingual showcase for customers to browse and order custom-printed clothing, alongside a comprehensive, secure back-office dashboard for administrators to manage products, coordinate deliveries across all 58 Algerian Wilayas, and export logistics spreadsheets.
-
----
-
-## ✨ Features
-
-### 🛒 Customer-Facing Portal
-- **Stunning UI/UX**: Dark mode theme with premium glassmorphic cards, micro-interactions, Outfit & Space Grotesk typography, and glow highlights.
-- **Bilingual Interface**: Seamless translation switcher between **English (EN)** and **French (FR)** powered by `react-i18next`.
-- **Algerian Logistics Engine**: Integrated checkout form configured for the 58 Wilayas of Algeria, supporting **Home Delivery** and **Desk Pickup** (Livraison à domicile / Bureau) with automated delivery fee calculations.
-- **Product Options**: Detailed visual selectors for product categories, sizes (S, M, L, XL, etc.), colors, and zoomable images.
-
-### 🛡️ Admin Management Dashboard
-- **Secure Authentication**: Protected dashboard via JWT/session administration controls.
-- **Order Tracking & Lifecycle**: Monitor orders through status pipelines: `New`, `Confirmed`, `Shipped`, `Delivered`, and `Cancelled`.
-- **Inventory Management**: Create, edit, delete products, and toggle stock availability in real-time.
-- **Dynamic Delivery Pricing**: Bulk editor to customize shipping fees for every Wilaya.
-- **Excel Logistics Export**: Download order data directly into `.xlsx` formats for shipping agencies and accounting sheets.
-- **Image Uploader**: Upload high-resolution product imagery directly into Supabase Storage.
+Ulvic Print is a full-stack web application designed for a custom merchandise and t-shirt printing business in Algeria. Customers can browse clothing, pick sizes and colors, and place orders across all 58 Algerian Wilayas with home delivery or desk pickup. Administrators manage the product catalog, update order statuses, adjust regional shipping fees, and export logistics spreadsheets.
 
 ---
 
-## 🏗️ Architecture
+## Features
 
-The application is structured as a decoupled Single Page Application (SPA) with a serverless backend API connected to a secure relational database.
+### Customer storefront
+
+- Dark mode interface with responsive layout and product imagery
+- Bilingual interface with English and French translation via `react-i18next`
+- Checkout form configured for the 58 Wilayas of Algeria, supporting home delivery and desk pickup (Livraison à domicile / Bureau) with automated delivery fee calculations
+- Selectors for product categories, sizes (S, M, L, XL), colors, and image zoom
+
+### Admin dashboard
+
+- Protected dashboard with JWT and session-based administration
+- Order lifecycle tracking through status stages: New, Confirmed, Shipped, Delivered, and Cancelled
+- Product catalog management: create, edit, delete products, and toggle stock availability
+- Regional delivery rate editor to customize shipping fees for each Wilaya
+- Spreadsheet export: download order records into `.xlsx` formats for delivery agencies and accounting
+- Direct image uploads to Supabase Storage
+
+---
+
+## Architecture
+
+The application is structured as a single-page application (SPA) with a serverless backend API connected to a PostgreSQL database on Supabase.
 
 ```mermaid
 graph TD
@@ -50,34 +52,36 @@ graph TD
 
 ---
 
-## 🛠️ Tech Stack
+## Tech stack
 
-- **Frontend**:
-  - [React 19](https://react.dev/) & [Vite](https://vite.dev/)
-  - [TypeScript](https://www.typescriptlang.org/) (Strict Typings)
+- Frontend:
+  - [React 19](https://react.dev/) and [Vite](https://vite.dev/)
+  - [TypeScript](https://www.typescriptlang.org/)
   - [Tailwind CSS v4](https://tailwindcss.com/)
   - [Lucide React](https://lucide.dev/) (Icons)
-  - [React Router DOM v7](https://reactrouter.com/) (Routing)
-  - [i18next](https://www.i18next.com/) (Localization)
-- **Backend API**:
+  - [React Router DOM v7](https://reactrouter.com/)
+  - [i18next](https://www.i18next.com/)
+- Backend API:
   - [Express](https://expressjs.com/) (Node.js framework)
-  - [Dotenv](https://github.com/motdotla/dotenv) (Environment config)
-  - [Multer](https://github.com/expressjs/multer) (File processing)
-- **Database & Services**:
+  - [Dotenv](https://github.com/motdotla/dotenv)
+  - [Multer](https://github.com/expressjs/multer)
+- Database & storage:
   - [Supabase PostgreSQL](https://supabase.com/)
   - [Supabase Storage](https://supabase.com/docs/guides/storage)
-  - [SheetJS (xlsx)](https://sheetjs.com/) (Spreadsheet generation)
-- **Deployment**:
+  - [SheetJS (xlsx)](https://sheetjs.com/)
+- Deployment:
   - [Vercel Serverless Functions](https://vercel.com/docs/functions)
 
 ---
 
-## 🗄️ Database Schema
+## Database schema
 
 The PostgreSQL schema consists of three core tables deployed on Supabase:
 
 ### `products`
-Stores merchandise information:
+
+Stores merchandise records:
+
 ```sql
 CREATE TABLE products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -96,7 +100,9 @@ CREATE TABLE products (
 ```
 
 ### `orders`
-Captures user purchase details:
+
+Stores customer purchase orders:
+
 ```sql
 CREATE TABLE orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -117,7 +123,9 @@ CREATE TABLE orders (
 ```
 
 ### `delivery_prices`
-Maps delivery fees dynamically per wilaya:
+
+Maps delivery fees per Wilaya:
+
 ```sql
 CREATE TABLE delivery_prices (
   wilaya TEXT PRIMARY KEY,
@@ -127,73 +135,82 @@ CREATE TABLE delivery_prices (
 
 ---
 
-## 🚀 Getting Started
+## Getting started
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18+)
-- [pnpm](https://pnpm.io/) (recommended) or `npm` / `yarn`
-- A [Supabase](https://supabase.com/) project initialized
 
-### 1. Clone & Install Dependencies
+- [Node.js](https://nodejs.org/) (v18+)
+- [pnpm](https://pnpm.io/) or `npm`
+- A [Supabase](https://supabase.com/) project
+
+### 1. Clone and install dependencies
+
 ```bash
-git clone https://github.com/your-username/ulvic.git
-cd ulvic
+git clone https://github.com/anesdevv/ulvik-print.git
+cd ulvik-print
 pnpm install
 ```
 
-### 2. Configure Environment Variables
-Create a `.env` file in the root of the project. You can copy the template from `.env.example`:
+### 2. Configure environment variables
+
+Create a `.env` file in the project root:
+
 ```bash
 cp .env.example .env
 ```
-Fill in the credentials:
+
+Fill in your configuration:
+
 ```ini
-# Frontend Variables (Client)
+# Frontend variables (client)
 VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 VITE_API_URL=/api
 
-# Backend Variables (Server runtime)
+# Backend variables (server runtime)
 SUPABASE_URL=https://your-project-id.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 NODE_ENV=development
 PORT=5000
 ```
 
-### 3. Database Migration Setup
-Connect to your Supabase SQL Editor and run the SQL migration found in:
-* [`supabase/migrations/20260605000000_init.sql`](file:///c:/Users/Admin/Downloads/ulvic/supabase/migrations/20260605000000_init.sql)
+### 3. Database migrations
 
-This will set up the required table structures and seed the database with all 58 Algerian Wilayas and baseline shipping fees.
+Run the initial migration in your Supabase SQL editor:
+- `supabase/migrations/20260605000000_init.sql`
 
-### 4. Running Locally
-Run both the development frontend and local backend.
+This migration creates the required tables and seeds the database with the 58 Algerian Wilayas and baseline shipping fees.
+
+### 4. Running locally
+
+Start the development server:
 
 ```bash
-# Start the Vite client dev server
 pnpm run dev
 ```
 
-*Note: In local development, the backend automatically runs via the express proxy configured in your Vite configuration, or by running the backend separately (`node api/index.ts` / `tsx api/index.ts`)*
+During local development, API requests route through the Vite proxy or through the standalone Express server (`node api/index.ts`).
 
 ---
 
-## 📦 Deployment
+## Deployment
 
 ### Deploying to Vercel
-This project is pre-configured with a [vercel.json](file:///c:/Users/Admin/Downloads/ulvic/vercel.json) file that maps the Express server route configurations to Vercel Serverless Functions.
 
-1. Install Vercel CLI globally:
+This repository includes a `vercel.json` configuration that routes Express endpoints to Vercel Serverless Functions.
+
+1. Install the Vercel CLI:
    ```bash
    npm install -g vercel
    ```
-2. Link your project and deploy:
+2. Link the repository and deploy:
    ```bash
    vercel
    ```
-3. Set your production environment variables in your Vercel Project Dashboard settings (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `NODE_ENV=production`).
+3. Set your production environment variables in the Vercel project dashboard (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `NODE_ENV=production`).
 
 ---
 
-## 📝 License
-Distributed under the MIT License. See `LICENSE` for more information.
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
